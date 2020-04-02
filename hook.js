@@ -79,15 +79,9 @@ reactNativeNavigationPath = dir + "/react-native-navigation";
  */
 if (OPT_RUN == 1) {
     injector.injectReactNative(reactNativePath);
-    injector.injectReactNavigation(reactNavigationPath);
-    injector.injectReactNavigation3(reactNavigationPath3X);
-    injector.injectReactNativeNavigation(reactNativeNavigationPath);
     return;
 }
 if(OPT_DISCARD == 1){
      injector.injectReactNative(reactNativePath,true);
-     injector.injectReactNavigation(reactNavigationPath, true);
-     injector.injectReactNavigation3(reactNavigationPath3X, true);
-     injector.injectReactNativeNavigation(reactNativeNavigationPath, true);
      return;
 }
