@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package com.sensorsdata.analytics;
+package com.sensorsdata.analytics.rnsdk;
 
 
 import android.text.TextUtils;
@@ -687,5 +687,4 @@ public class RNSensorsAnalyticsModule extends ReactContextBaseJavaModule {
             Log.e(LOGTAG, e.toString() + "");
         }
     }
-
 }

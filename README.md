@@ -1,22 +1,19 @@
-# 1.使用 npm 方式 install 神策 SDK 模块
+# 1.使用 npm 方式 install  SDK 模块
 
-对于 React Native 开发的应用，可以使用 npm 方式集成神策 SDK RN 模块。
+对于 React Native 开发的应用，可以使用 npm 方式集成 SDK RN 模块。
 
-## 1.1 npm 安装 sensorsdata-analytics-react-native 模块
+## 1.1 npm 安装 chenru-react-native-test 模块
 
 ```sh
-npm install sensorsdata-analytics-react-native
+npm install chenru-react-native-test
 ```
 
-## 1.2 `link` sensorsdata-analytics-react-native 模块
+## 1.2 `link` chenru-react-native-test 模块
 
 <span style="color:red">注意：React Native 0.60 及以上版本会 autolinking，不需要执行下边的 react-native link 命令</span>
 ```sh
-react-native link sensorsdata-analytics-react-native
+react-native link chenru-react-native-test
 ```
-
-
-### 详细文档请参考：[Android & iOS SDK 在 React Native 中使用说明](https://www.sensorsdata.cn/manual/sdk_reactnative.html)
 
 ## License
 

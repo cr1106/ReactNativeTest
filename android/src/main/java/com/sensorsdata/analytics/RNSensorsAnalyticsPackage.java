@@ -1,4 +1,4 @@
-package com.sensorsdata.analytics;
+package com.sensorsdata.analytics.rnsdk;
 
 import com.facebook.react.ReactPackage;
 import com.facebook.react.bridge.JavaScriptModule;
@@ -20,6 +20,7 @@ public class RNSensorsAnalyticsPackage implements ReactPackage {
         List<NativeModule> modules = new ArrayList<>();
         //在你们的Package中 添加神策原生模块
         modules.add(new RNSensorsAnalyticsModule(reactContext));
+        modules.add(new SensorsDataModule(reactContext));
         return modules;
     }
 

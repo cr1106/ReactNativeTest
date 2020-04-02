@@ -1,23 +1,21 @@
 {
-  "name": "sensorsdata-analytics-react-native",
-  "version": "1.1.7",
+  "name": "chenru-react-native-test",
+  "version": "0.0.1",
   "private": false,
-  "description": "神策分析 RN 组件",
+  "description": "RN 组件",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [
-    "sensors",
-    "analytics",
-    "神策",
-    "神策分析"
+    "chenru",
+    "reactnative"
   ],
-  "author": "yangzhankun",
+  "author": "chenru",
   "license": "Apache-2.0",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/sensorsdata/react-native-sensors-analytics.git"
+    "url": "git+https://github.com/cr1106/ReactNativeTest.git"
   },
-   "homepage": "https://github.com/sensorsdata/react-native-sensors-analytics"
+   "homepage": "https://github.com/cr1106/ReactNativeTest"
 }
