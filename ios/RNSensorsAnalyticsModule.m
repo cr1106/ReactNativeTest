@@ -719,48 +719,11 @@ RCT_EXPORT_METHOD(trackChannelEvent:(NSString *)event properties:(nullable NSDic
     }
 }
 
+RCT_EXPORT_METHOD(onPageShow:(NSString *)pageName) {
+  @try {
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Warc-performSelector-leaks"
 
-RCT_EXPORT_METHOD(trackViewClick:(NSInteger)reactTag) {
-    @try {
-        Class sa = NSClassFromString(@"SensorsAnalyticsSDK");
-        SEL shared = NSSelectorFromString(@"sharedInstance");
-        if (![sa respondsToSelector:shared]) {
-            return;
-        }
-        id sdk = [sa performSelector:shared];
-        if (![sdk respondsToSelector:NSSelectorFromString(@"trackViewClick:")]) {
-            return;
-        }
-        NSNumber *tag = [NSNumber numberWithInteger:reactTag];
-        [sdk performSelector:NSSelectorFromString(@"trackViewClick:") withObject:tag];
-    } @catch (NSException *exception) {
-        NSLog(@"[RNSensorsAnalytics] error:%@",exception);
-    }
-}
-
-RCT_EXPORT_METHOD(prepareView:(NSInteger)reactTag enableClick:(BOOL)enableClick properties:(NSDictionary *)properties) {
-  @try {
-      Class sa = NSClassFromString(@"SensorsAnalyticsSDK");
-      SEL shared = NSSelectorFromString(@"sharedInstance");
-      if (![sa respondsToSelector:shared]) {
-          return;
-      }
-      id sdk = [sa performSelector:shared];
-      SEL prepareView = NSSelectorFromString(@"prepareView:properties:");
-      if (![sdk respondsToSelector:prepareView]) {
-          return;
-      }
-      NSDictionary *object = @{@"reactTag":@(reactTag), @"enableClick":@(enableClick)};
-      [sdk performSelector:prepareView withObject:object withObject:properties];
-  } @catch (NSException *exception) {
-      NSLog(@"[RNSensorsAnalytics] error:%@",exception);
-  }
-}
-
-RCT_EXPORT_METHOD(onPageShow:(NSString *)pageName) {
-  @try {
       Class sa = NSClassFromString(@"SensorsAnalyticsSDK");
       SEL shared = NSSelectorFromString(@"sharedInstance");
       if (![sa respondsToSelector:shared]) {
@@ -772,11 +735,11 @@ RCT_EXPORT_METHOD(onPageShow:(NSString *)pageName) {
           return;
       }
       [sdk performSelector:onPageShow withObject:pageName withObject:nil];
+#pragma clang diagnostic pop
+
   } @catch (NSException *exception) {
 //      NSLog(@"[RNSensorsAnalytics] error:%@",exception);
   }
 }
-
-#pragma clang diagnostic pop
 
 @end
