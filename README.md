@@ -15,18 +15,13 @@ npm install chenru-react-native-test
 react-native link chenru-react-native-test
 ```
 
-## License
-
-Copyright 2015－2020 Sensors Data Inc.
-
-Licensed under the Apache License, Version 2.0 (the "License");
-you may not use this file except in compliance with the License.
-You may obtain a copy of the License at
-
-http://www.apache.org/licenses/LICENSE-2.0
-
-Unless required by applicable law or agreed to in writing, software
-distributed under the License is distributed on an "AS IS" BASIS,
-WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-See the License for the specific language governing permissions and
-limitations under the License.
+# 2.执行 hook.js
+```sh
+node node_modules/chenru-react-native-test/hook.js -run
+```
+<span style="color:red">注意：每次 npm install 后都需要重新调用，可在 package.json 中配置，保存后调用 npm install</span>
+```sh
+"scripts": {
+	  "postinstall": "node node_modules/chenru-react-native-test/hook.js -run"
+}
+```
