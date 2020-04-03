@@ -66,7 +66,7 @@ if (OPT_VERSION == 1) {
     return;
 }
 
-var dir = path.resolve(__dirname,"node_modules");
+var dir = path.resolve(__dirname,"..");
 
 console.log(dir);
 reactNativePath = dir + '/react-native';
