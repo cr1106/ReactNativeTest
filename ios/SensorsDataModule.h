@@ -15,7 +15,7 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface SensorsDataModule : NSObject
+@interface SensorsDataModule : NSObject <RCTBridgeModule>
 
 @end
 
