@@ -1,4 +1,4 @@
-package com.sensorsdata.analytics.rnsdk.utils;
+package com.sensorsdata.analytics.utils;
 
 import android.view.View;
 

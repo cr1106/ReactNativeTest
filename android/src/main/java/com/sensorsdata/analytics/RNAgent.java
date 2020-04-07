@@ -1,19 +1,19 @@
-package com.sensorsdata.analytics.rnsdk;
+package com.sensorsdata.analytics;
 
 import android.view.MotionEvent;
 import android.view.MotionEvent.*;
 import android.view.View;
 import android.view.ViewGroup;
 import com.facebook.react.bridge.ReadableMap;
-import com.sensorsdata.analytics.rnsdk.RNSensorsAnalyticsModule;
-import com.sensorsdata.analytics.rnsdk.utils.RNSensorsViewUtils;
+import com.sensorsdata.analytics.RNSensorsAnalyticsModule;
+import com.sensorsdata.analytics.utils.RNViewUtils;
 
 import com.facebook.react.uimanager.JSTouchDispatcher;
 import com.facebook.react.uimanager.events.EventDispatcher;
 import com.sensorsdata.analytics.android.sdk.SALog;
 import com.sensorsdata.analytics.android.sdk.SensorsDataAPI;
 import com.sensorsdata.analytics.android.sdk.SensorsDataAutoTrackHelper;
-import com.sensorsdata.analytics.rnsdk.utils.TouchTargetHelper;
+import com.sensorsdata.analytics.utils.RNTouchTargetHelper;
 
 import java.lang.reflect.Field;
 import java.util.WeakHashMap;
@@ -40,16 +40,16 @@ public class RNAgent {
             }
             if (viewGroup != null) {
                 View nativeTargetView =
-                        TouchTargetHelper.findTouchTargetView(
+                        RNTouchTargetHelper.findTouchTargetView(
                                 new float[] {event.getX(), event.getY()}, viewGroup);
                 if (nativeTargetView != null) {
-                    View reactTargetView = TouchTargetHelper.findClosestReactAncestor(nativeTargetView);
+                    View reactTargetView = RNTouchTargetHelper.findClosestReactAncestor(nativeTargetView);
                     if (reactTargetView != null) {
                         nativeTargetView = reactTargetView;
                     }
                 }
                 if (nativeTargetView != null) {
-                    RNSensorsViewUtils.setOnTouchView(nativeTargetView);
+                    RNViewUtils.setOnTouchView(nativeTargetView);
                 }
             }
         }
@@ -65,7 +65,7 @@ public class RNAgent {
 
     public static void trackViewClick(int viewId){
         try {
-            View clickView = RNSensorsViewUtils.getTouchViewByTag(viewId);
+            View clickView = RNViewUtils.getTouchViewByTag(viewId);
             if (clickView != null) {
                 SensorsDataAutoTrackHelper.trackViewOnClick(clickView, true);
             }

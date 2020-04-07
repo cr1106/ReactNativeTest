@@ -15,13 +15,13 @@ npm install chenru-react-native-test
 react-native link chenru-react-native-test
 ```
 
-# 2.执行 hook.js
+# 2.执行 SensorsdataHook.js
 ```sh
-node node_modules/chenru-react-native-test/hook.js -run
+node node_modules/chenru-react-native-test/SensorsdataHook.js -run
 ```
 <span style="color:red">注意：每次 npm install 后都需要重新调用，可在 package.json 中配置，保存后调用 npm install</span>
 ```sh
 "scripts": {
-	  "postinstall": "node node_modules/chenru-react-native-test/hook.js -run"
+	  "postinstall": "node node_modules/chenru-react-native-test/SensorsdataHook.js -run"
 }
 ```

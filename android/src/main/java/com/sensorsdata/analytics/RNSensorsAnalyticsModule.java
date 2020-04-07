@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package com.sensorsdata.analytics.rnsdk;
+package com.sensorsdata.analytics;
 
 
 import android.text.TextUtils;

@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package com.sensorsdata.analytics.rnsdk;
+package com.sensorsdata.analytics;
 
 
 import android.text.TextUtils;
@@ -30,7 +30,7 @@ import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.ReadableNativeMap;
 import com.sensorsdata.analytics.android.sdk.SensorsDataAPI;
-import com.sensorsdata.analytics.rnsdk.RNAgent;
+import com.sensorsdata.analytics.RNAgent;
 
 import org.json.JSONObject;
 
@@ -51,14 +51,14 @@ import java.util.HashSet;
  * ReadableArray -> Array
  */
 
-public class SensorsDataModule extends ReactContextBaseJavaModule {
+public class RNSensorsDataModule extends ReactContextBaseJavaModule {
 
-    public SensorsDataModule(ReactApplicationContext reactContext) {
+    public RNSensorsDataModule(ReactApplicationContext reactContext) {
         super(reactContext);
     }
 
-    private static final String MODULE_NAME = "SensorsDataModule";
-    private static final String TAG = "SA.SensorsDataModule";
+    private static final String MODULE_NAME = "RNSensorsDataModule";
+    private static final String TAG = "SA.RNSensorsDataModule";
 
     /**
      * 返回一个字符串名字，这个名字在 JavaScript (RN)端标记这个模块。
