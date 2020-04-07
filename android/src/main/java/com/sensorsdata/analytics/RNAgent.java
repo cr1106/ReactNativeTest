@@ -67,7 +67,7 @@ public class RNAgent {
         try {
             View clickView = RNViewUtils.getTouchViewByTag(viewId);
             if (clickView != null) {
-                SensorsDataAutoTrackHelper.trackViewOnClick(clickView, true);
+                SensorsDataAutoTrackHelper.trackViewOnClick(clickView);
             }
         } catch (Exception e) {
             SALog.printStackTrace(e);
