@@ -14,7 +14,7 @@ import android.view.ViewGroup;
 import android.view.View;
 import android.view.ViewParent;
 
-public class RNSensorsViewUtils {
+public class RNViewUtils {
 
     private static WeakReference onTouchViewReference;
 
