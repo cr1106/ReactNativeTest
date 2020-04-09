@@ -2,7 +2,7 @@
 // 系统变量
 var path = require("path"),
     fs = require("fs"),
-    dir = path.resolve(__dirname, "node_modules");
+    dir = path.resolve(__dirname, '..');
 
 // 自定义变量
 // RN 控制点击事件 Touchable.js 源码文件
