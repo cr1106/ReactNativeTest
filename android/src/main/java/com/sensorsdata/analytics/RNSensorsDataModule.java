@@ -73,4 +73,10 @@ public class RNSensorsDataModule extends ReactContextBaseJavaModule {
         RNAgent.trackViewClick(viewId);
     }
 
+    @ReactMethod
+    public void onPageShow(String componentName) {
+        if (componentName != null) {
+            RNAgent.tarckViewScreen(componentName, null);
+        }
+    }
 }

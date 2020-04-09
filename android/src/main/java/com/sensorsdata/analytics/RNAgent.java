@@ -12,6 +12,7 @@ import com.facebook.react.uimanager.JSTouchDispatcher;
 import com.facebook.react.uimanager.events.EventDispatcher;
 import com.sensorsdata.analytics.android.sdk.SALog;
 import com.sensorsdata.analytics.android.sdk.SensorsDataAPI;
+import com.sensorsdata.analytics.android.sdk.util.SensorsDataUtils;
 import com.sensorsdata.analytics.android.sdk.SensorsDataAutoTrackHelper;
 import com.sensorsdata.analytics.utils.RNTouchTargetHelper;
 
@@ -55,9 +56,10 @@ public class RNAgent {
         }
     }
 
-    public static void tarckViewScreen(String url){
+    public static void tarckViewScreen(String componentName,String title){
         try{
-            SensorsDataAPI.sharedInstance().trackViewScreen(url,null);
+            SensorsDataUtils.buildActivityProperties(componentName, title);
+            SensorsDataAPI.sharedInstance().trackViewScreen(componentName, null);
         }catch(Exception e){
             SALog.printStackTrace(e);
         }

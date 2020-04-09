@@ -687,4 +687,11 @@ public class RNSensorsAnalyticsModule extends ReactContextBaseJavaModule {
             Log.e(LOGTAG, e.toString() + "");
         }
     }
+
+    @ReactMethod
+    public void onPageShow(String componentName,String title) {
+        if (componentName != null) {
+            RNAgent.tarckViewScreen(componentName,title);
+        }
+    }
 }
