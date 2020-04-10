@@ -307,7 +307,7 @@ public class RNSensorsAnalyticsModule extends ReactContextBaseJavaModule {
     @ReactMethod
     public void trackViewScreen(String url, ReadableMap properties) {
         try {
-            SensorsDataAPI.sharedInstance().trackViewScreen(url, convertToJSONObject(properties));
+            RNAgent.trackPageView(url, null, convertToJSONObject(properties));
         } catch (Exception e) {
             e.printStackTrace();
             Log.e(LOGTAG, e.toString() + "");
@@ -689,9 +689,9 @@ public class RNSensorsAnalyticsModule extends ReactContextBaseJavaModule {
     }
 
     @ReactMethod
-    public void onPageShow(String componentName,String title) {
+    public void trackPageView(String componentName, String title, ReadableMap properties) {
         if (componentName != null) {
-            RNAgent.tarckViewScreen(componentName,title);
+            RNAgent.trackPageView(componentName, title, convertToJSONObject(properties));
         }
     }
 }

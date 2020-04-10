@@ -59,7 +59,6 @@ public class RNViewUtils {
     public static View getClickViewInChild(int viewId, ViewGroup currentView) {
         int currentViewCount = currentView.getChildCount();
         for (int i = 0; i < currentViewCount; i++) {
-            SALog.i("SA.RN----->childId", viewId + "");
             View childView = currentView.getChildAt(i);
             if (childView != null) {
                 if (childView.getId() == viewId) {

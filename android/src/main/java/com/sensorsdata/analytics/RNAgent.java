@@ -56,10 +56,10 @@ public class RNAgent {
         }
     }
 
-    public static void tarckViewScreen(String componentName,String title){
+    public static void trackPageView(String componentName, String title, JSONObject properties){
         try{
             SensorsDataUtils.buildActivityProperties(componentName, title);
-            SensorsDataAPI.sharedInstance().trackViewScreen(componentName, null);
+            SensorsDataAPI.sharedInstance().trackViewScreen(componentName, properties);
         }catch(Exception e){
             SALog.printStackTrace(e);
         }
