@@ -56,10 +56,12 @@ public class RNAgent {
         }
     }
 
-    public static void trackPageView(String componentName, String title, JSONObject properties){
+    public static void trackPageView(String url, JSONObject properties){
         try{
-            SensorsDataUtils.buildActivityProperties(componentName, title);
-            SensorsDataAPI.sharedInstance().trackViewScreen(componentName, properties);
+            if (SensorsDataAPI.sharedInstance().isAutoTrackEventTypeIgnored(SensorsDataAPI.AutoTrackEventType.APP_VIEW_SCREEN)) {
+                return;
+            }
+            SensorsDataAPI.sharedInstance().trackViewScreen(url, properties);
         }catch(Exception e){
             SALog.printStackTrace(e);
         }
@@ -67,9 +69,18 @@ public class RNAgent {
 
     public static void trackViewClick(int viewId){
         try {
-            View clickView = RNViewUtils.getTouchViewByTag(viewId);
-            if (clickView != null) {
-                SensorsDataAutoTrackHelper.trackViewOnClick(clickView);
+            if(SensorsDataAPI.sharedInstance().isReactNativeAutoTrackEnabled()){
+                View clickView = RNViewUtils.getTouchViewByTag(viewId);
+                if (clickView != null) {
+                    JSONObject properties = new JSONObject();
+                    if(RNViewUtils.getTitle() != null){
+                        properties.put("$title",RNViewUtils.getTitle());
+                    }
+                    if(RNViewUtils.getUrl() != null){
+                        properties.put("$screen_name",RNViewUtils.getUrl());
+                    }
+                    SensorsDataAPI.sharedInstance().trackViewAppClick(clickView,properties);
+                }
             }
         } catch (Exception e) {
             SALog.printStackTrace(e);

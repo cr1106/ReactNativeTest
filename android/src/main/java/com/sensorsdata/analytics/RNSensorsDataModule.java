@@ -30,7 +30,10 @@ import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.ReadableNativeMap;
 import com.sensorsdata.analytics.android.sdk.SensorsDataAPI;
+import com.sensorsdata.analytics.android.sdk.SALog;
 import com.sensorsdata.analytics.RNAgent;
+import com.sensorsdata.analytics.utils.RNUtils;
+import com.sensorsdata.analytics.utils.RNViewUtils;
 
 import org.json.JSONObject;
 
@@ -74,9 +77,49 @@ public class RNSensorsDataModule extends ReactContextBaseJavaModule {
     }
 
     @ReactMethod
-    public void trackPageView(String componentName) {
-        if (componentName != null) {
-            RNAgent.trackPageView(componentName, null, null);
+    public void trackPageView(ReadableMap params) {
+        try{
+            if (params != null) {
+                JSONObject jsonParams = RNUtils.convertToJSONObject(params);
+                if(jsonParams.optBoolean("sensorsDataIgnore",false)){
+                    return;
+                }
+                JSONObject properties = null;
+                if(jsonParams.has("SAProperties")){
+                    properties = jsonParams.optJSONObject("SAProperties");
+                }
+                if(properties == null){
+                    properties = new JSONObject();
+                }
+                String url = null;
+                if(jsonParams.has("sensorsDataUrl")){
+                    url = jsonParams.getString("sensorsDataUrl");
+                }
+                if(url == null){
+                    return;
+                }
+                String title = null;
+                if(properties.has("title")){
+                    title = properties.getString("title");
+                    properties.put("$title",title);
+                    properties.remove("title");
+                }else{
+                    properties.put("$title",url);
+                }
+                properties.put("$screen_name",url);
+                RNViewUtils.saveUrlAndTitle(url,title);
+                RNAgent.trackPageView(url, properties);
+            }   
+        }catch(Exception e){
+            SALog.printStackTrace(e);
         }
-    }
+}
+
+    // @ReactMethod
+    // public void trackPageView(String title) {
+    //      SALog.i("SA.RN----------title->",title);
+    //     if (title != null) {
+    //         RNAgent.trackPageView(title, null,null);
+    //     }
+    // }
 }
