@@ -1,5 +1,5 @@
 //
-//  SensorsDataModule.h
+//  RNSensorsDataModule.h
 //  RNSensorsAnalyticsModule
 //
 //  Created by 彭远洋 on 2020/4/3.
@@ -15,7 +15,7 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface SensorsDataModule : NSObject
+@interface RNSensorsDataModule : NSObject <RCTBridgeModule>
 
 @end
 

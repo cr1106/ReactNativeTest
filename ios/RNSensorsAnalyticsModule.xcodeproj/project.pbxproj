@@ -8,7 +8,8 @@
 
 /* Begin PBXBuildFile section */
 		A18E9FB421A6AEDD00A66E41 /* RNSensorsAnalyticsModule.m in Sources */ = {isa = PBXBuildFile; fileRef = A18E9FB221A6AEDD00A66E41 /* RNSensorsAnalyticsModule.m */; };
-		FC9EE6B1243739A900C45D16 /* SensorsDataModule.m in Sources */ = {isa = PBXBuildFile; fileRef = FC9EE6AF243739A900C45D16 /* SensorsDataModule.m */; };
+		FC39004C244715AE00F486A7 /* SAReactNativeManager.m in Sources */ = {isa = PBXBuildFile; fileRef = FC39004B244715AE00F486A7 /* SAReactNativeManager.m */; };
+		FC9EE671243731C000C45D16 /* RNSensorsDataModule.m in Sources */ = {isa = PBXBuildFile; fileRef = FC9EE670243731C000C45D16 /* RNSensorsDataModule.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -27,8 +28,10 @@
 		A18E9FA621A6AB4300A66E41 /* libRNSensorsAnalyticsModule.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libRNSensorsAnalyticsModule.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		A18E9FB221A6AEDD00A66E41 /* RNSensorsAnalyticsModule.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RNSensorsAnalyticsModule.m; sourceTree = "<group>"; };
 		A18E9FB321A6AEDD00A66E41 /* RNSensorsAnalyticsModule.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RNSensorsAnalyticsModule.h; sourceTree = "<group>"; };
-		FC9EE6AF243739A900C45D16 /* SensorsDataModule.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SensorsDataModule.m; sourceTree = "<group>"; };
-		FC9EE6B0243739A900C45D16 /* SensorsDataModule.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SensorsDataModule.h; sourceTree = "<group>"; };
+		FC39004A244715AE00F486A7 /* SAReactNativeManager.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SAReactNativeManager.h; sourceTree = "<group>"; };
+		FC39004B244715AE00F486A7 /* SAReactNativeManager.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SAReactNativeManager.m; sourceTree = "<group>"; };
+		FC9EE66F243731C000C45D16 /* RNSensorsDataModule.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RNSensorsDataModule.h; sourceTree = "<group>"; };
+		FC9EE670243731C000C45D16 /* RNSensorsDataModule.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RNSensorsDataModule.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -45,10 +48,12 @@
 		A18E9F9D21A6AB4300A66E41 = {
 			isa = PBXGroup;
 			children = (
-				FC9EE6B0243739A900C45D16 /* SensorsDataModule.h */,
-				FC9EE6AF243739A900C45D16 /* SensorsDataModule.m */,
 				A18E9FB321A6AEDD00A66E41 /* RNSensorsAnalyticsModule.h */,
 				A18E9FB221A6AEDD00A66E41 /* RNSensorsAnalyticsModule.m */,
+				FC9EE66F243731C000C45D16 /* RNSensorsDataModule.h */,
+				FC9EE670243731C000C45D16 /* RNSensorsDataModule.m */,
+				FC39004A244715AE00F486A7 /* SAReactNativeManager.h */,
+				FC39004B244715AE00F486A7 /* SAReactNativeManager.m */,
 				A18E9FA721A6AB4300A66E41 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -118,7 +123,8 @@
 			buildActionMask = 2147483647;
 			files = (
 				A18E9FB421A6AEDD00A66E41 /* RNSensorsAnalyticsModule.m in Sources */,
-				FC9EE6B1243739A900C45D16 /* SensorsDataModule.m in Sources */,
+				FC39004C244715AE00F486A7 /* SAReactNativeManager.m in Sources */,
+				FC9EE671243731C000C45D16 /* RNSensorsDataModule.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
