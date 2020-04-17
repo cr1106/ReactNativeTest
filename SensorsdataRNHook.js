@@ -75,12 +75,12 @@ navigationString3 = function (prevStateVarName, currentStateVarName, actionName)
                 return $$$getActivePageName$$$(route);
             }else{
                 if(route.params) {
-            if(!route.params["sensorsDataUrl"]){
-              route.params.sensorsDataUrl = route.routeName;
+            if(!route.params["sensorsdataurl"]){
+              route.params.sensorsdataurl = route.routeName;
             }
                     return route.params; 
                 } else {
-             route.params = {sensorsDataUrl:route.routeName};
+             route.params = {sensorsdataurl:route.routeName};
           }
           return route.params;
             }
@@ -116,7 +116,7 @@ navigationString3 = function (prevStateVarName, currentStateVarName, actionName)
             if (require('react-native').Platform.OS === 'android') {
                 if (${prevStateVarName}){
                     var prevParams = $$$getActivePageName$$$(${prevStateVarName});
-                    if (params.sensorsDataUrl == prevParams.sensorsDataUrl){
+                    if (params.sensorsdataurl == prevParams.sensorsdataurl){
                           return;
                     }
                  }
@@ -134,11 +134,11 @@ navigationEventString = function () {
           }
           if(payload && payload.state && payload.state.key && payload.state.routeName && payload.state.key != payload.state.routeName) {
             if(payload.state.params) {
-                if(!payload.state.params.sensorsDataUrl){
-                    payload.state.params.sensorsDataUrl = payload.state.routeName;
+                if(!payload.state.params.sensorsdataurl){
+                    payload.state.params.sensorsdataurl = payload.state.routeName;
                 }
             }else{
-                payload.state.params = {sensorsDataUrl:payload.state.routeName};
+                payload.state.params = {sensorsdataurl:payload.state.routeName};
             }
             if(type == 'didFocus') {
                 require('react-native').NativeModules.RNSensorsDataModule.trackPageView(payload.state.params);
@@ -156,12 +156,12 @@ navigationString = function (currentStateVarName, actionName) {
                 return $$$getActivePageName$$$(route);
             }else{
                     if(route.params) {
-                if(!route.params["sensorsDataUrl"]){
-                  route.params.sensorsDataUrl = route.routeName;
+                if(!route.params["sensorsdataurl"]){
+                  route.params.sensorsdataurl = route.routeName;
                 }
                         return route.params; 
                     } else {
-                 route.params = {sensorsDataUrl:route.routeName};
+                 route.params = {sensorsdataurl:route.routeName};
               }
               return route.params;
             }

@@ -81,45 +81,24 @@ public class RNSensorsDataModule extends ReactContextBaseJavaModule {
         try{
             if (params != null) {
                 JSONObject jsonParams = RNUtils.convertToJSONObject(params);
-                if(jsonParams.optBoolean("sensorsDataIgnore",false)){
+                if(jsonParams.optBoolean("sensorsdataignore",false)){
                     return;
                 }
                 JSONObject properties = null;
-                if(jsonParams.has("SAProperties")){
-                    properties = jsonParams.optJSONObject("SAProperties");
-                }
-                if(properties == null){
-                    properties = new JSONObject();
+                if(jsonParams.has("sensorsdataparams")){
+                    properties = jsonParams.optJSONObject("sensorsdataparams");
                 }
                 String url = null;
-                if(jsonParams.has("sensorsDataUrl")){
-                    url = jsonParams.getString("sensorsDataUrl");
+                if(jsonParams.has("sensorsdataurl")){
+                    url = jsonParams.getString("sensorsdataurl");
                 }
                 if(url == null){
                     return;
                 }
-                String title = null;
-                if(properties.has("title")){
-                    title = properties.getString("title");
-                    properties.put("$title",title);
-                    properties.remove("title");
-                }else{
-                    properties.put("$title",url);
-                }
-                properties.put("$screen_name",url);
-                RNViewUtils.saveUrlAndTitle(url,title);
                 RNAgent.trackPageView(url, properties);
-            }   
+            }
         }catch(Exception e){
             SALog.printStackTrace(e);
         }
-}
-
-    // @ReactMethod
-    // public void trackPageView(String title) {
-    //      SALog.i("SA.RN----------title->",title);
-    //     if (title != null) {
-    //         RNAgent.trackPageView(title, null,null);
-    //     }
-    // }
+    }
 }

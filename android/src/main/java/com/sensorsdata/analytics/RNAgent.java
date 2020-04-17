@@ -58,9 +58,19 @@ public class RNAgent {
 
     public static void trackPageView(String url, JSONObject properties){
         try{
-            if (SensorsDataAPI.sharedInstance().isAutoTrackEventTypeIgnored(SensorsDataAPI.AutoTrackEventType.APP_VIEW_SCREEN)) {
-                return;
+            String title = null;
+            if(properties == null){
+                properties = new JSONObject();
             }
+            if(properties.has("title")){
+                title = properties.getString("title");
+                properties.put("$title",title);
+                properties.remove("title");
+            }else{
+                properties.put("$title",url);
+            }
+            properties.put("$screen_name",url);
+            RNViewUtils.saveUrlAndTitle(url,title);
             SensorsDataAPI.sharedInstance().trackViewScreen(url, properties);
         }catch(Exception e){
             SALog.printStackTrace(e);
@@ -69,18 +79,16 @@ public class RNAgent {
 
     public static void trackViewClick(int viewId){
         try {
-            if(SensorsDataAPI.sharedInstance().isReactNativeAutoTrackEnabled()){
-                View clickView = RNViewUtils.getTouchViewByTag(viewId);
-                if (clickView != null) {
-                    JSONObject properties = new JSONObject();
-                    if(RNViewUtils.getTitle() != null){
-                        properties.put("$title",RNViewUtils.getTitle());
-                    }
-                    if(RNViewUtils.getUrl() != null){
-                        properties.put("$screen_name",RNViewUtils.getUrl());
-                    }
-                    SensorsDataAPI.sharedInstance().trackViewAppClick(clickView,properties);
+            View clickView = RNViewUtils.getTouchViewByTag(viewId);
+            if (clickView != null) {
+                JSONObject properties = new JSONObject();
+                if(RNViewUtils.getTitle() != null){
+                    properties.put("$title",RNViewUtils.getTitle());
                 }
+                if(RNViewUtils.getUrl() != null){
+                    properties.put("$screen_name",RNViewUtils.getUrl());
+                }
+                SensorsDataAPI.sharedInstance().trackViewAppClick(clickView,properties);
             }
         } catch (Exception e) {
             SALog.printStackTrace(e);
