@@ -98,12 +98,12 @@ navigationString3 = function (prevStateVarName, currentStateVarName, actionName)
                                             return;
                                         }
                                     } else if (require('react-native').Platform.OS === 'ios') {
-                                        if((type == 'Navigation/BACK' && (${currentStateVarName} && !${currentStateVarName}.isTransitioning)) || type == 'Navigation/COMPLETE_TRANSITION') {
+                                        if(type == 'Navigation/BACK' && (${currentStateVarName} && !${currentStateVarName}.isTransitioning)) {
                                             iosOnPageShow = true;
-                                        } else if (type != 'Navigation/SET_PARAMS') {
-                                            iosOnPagePrepare = true;
+                                        } else if (!(type == 'Navigation/SET_PARAMS' || type == 'Navigation/COMPLETE_TRANSITION')) {
+                                            iosOnPageShow = true;
                                         }
-                                        if (!iosOnPagePrepare && !iosOnPageShow) {
+                                        if (!iosOnPageShow) {
                                             return;
                                         }
                                     }
