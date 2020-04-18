@@ -1,6 +1,6 @@
-# 1.使用 npm 方式 install  SDK 模块
+# chenru-react-native-test
 
-对于 React Native 开发的应用，可以使用 npm 方式集成 SDK RN 模块。
+# 1.安装 React Native 模块
 
 ## 1.1 npm 安装 chenru-react-native-test 模块
 
@@ -10,23 +10,36 @@ npm install chenru-react-native-test
 
 ## 1.2 `link` chenru-react-native-test 模块
 
-<span style="color:red">注意：React Native 0.60 及以上版本会 autolinking，不需要执行下边的 react-native link 命令</span>
+
 ```sh
 react-native link chenru-react-native-test
 ```
+# 2.开启 React Native 全埋点
 
-## License
+## 2.1 开启全埋点
+首先在 package.json 中增加如下配置：
+```sh
+"sensorsdata":{
+    "click":"enable",
+    "pageview":"enable"
+ }
+```
+<span style="color:red">注意：关闭全埋点后需要调用</span>
+```sh
+node node_modules/chenru-react-native-test/SensorsdataRNHook.js -reset
+```
 
-Copyright 2015－2020 Sensors Data Inc.
+## 2.2 执行 SensorsdataRNHook.js
+```sh
+node node_modules/sensorsdata-analytics-react-native/SensorsdataRNHook.js -run
+```
+<span style="color:red">注意：每次 npm install 后都需要重新调用，可在 package.json 中配置，保存后调用 npm install</span>
+```sh
+"scripts": {
+	  "postinstall": "node node_modules/chenru-react-native-test/SensorsdataRNHook.js -run"
+}
+```
 
-Licensed under the Apache License, Version 2.0 (the "License");
-you may not use this file except in compliance with the License.
-You may obtain a copy of the License at
 
-http://www.apache.org/licenses/LICENSE-2.0
 
-Unless required by applicable law or agreed to in writing, software
-distributed under the License is distributed on an "AS IS" BASIS,
-WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-See the License for the specific language governing permissions and
-limitations under the License.
+### 详细文档请参考：[Android & iOS SDK 在 React Native 中使用说明](https://www.sensorsdata.cn/manual/sdk_reactnative.html)

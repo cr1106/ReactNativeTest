@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		A18E9FB421A6AEDD00A66E41 /* RNSensorsAnalyticsModule.m in Sources */ = {isa = PBXBuildFile; fileRef = A18E9FB221A6AEDD00A66E41 /* RNSensorsAnalyticsModule.m */; };
+		FC9EE6B1243739A900C45D16 /* SensorsDataModule.m in Sources */ = {isa = PBXBuildFile; fileRef = FC9EE6AF243739A900C45D16 /* SensorsDataModule.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -26,7 +27,8 @@
 		A18E9FA621A6AB4300A66E41 /* libRNSensorsAnalyticsModule.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libRNSensorsAnalyticsModule.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		A18E9FB221A6AEDD00A66E41 /* RNSensorsAnalyticsModule.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RNSensorsAnalyticsModule.m; sourceTree = "<group>"; };
 		A18E9FB321A6AEDD00A66E41 /* RNSensorsAnalyticsModule.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RNSensorsAnalyticsModule.h; sourceTree = "<group>"; };
-		A18E9FFA21A6B22E00A66E41 /* SensorsAnalyticsSDK.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SensorsAnalyticsSDK.h; sourceTree = "<group>"; };
+		FC9EE6AF243739A900C45D16 /* SensorsDataModule.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SensorsDataModule.m; sourceTree = "<group>"; };
+		FC9EE6B0243739A900C45D16 /* SensorsDataModule.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SensorsDataModule.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -43,7 +45,8 @@
 		A18E9F9D21A6AB4300A66E41 = {
 			isa = PBXGroup;
 			children = (
-				A18E9FFA21A6B22E00A66E41 /* SensorsAnalyticsSDK.h */,
+				FC9EE6B0243739A900C45D16 /* SensorsDataModule.h */,
+				FC9EE6AF243739A900C45D16 /* SensorsDataModule.m */,
 				A18E9FB321A6AEDD00A66E41 /* RNSensorsAnalyticsModule.h */,
 				A18E9FB221A6AEDD00A66E41 /* RNSensorsAnalyticsModule.m */,
 				A18E9FA721A6AB4300A66E41 /* Products */,
@@ -115,6 +118,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				A18E9FB421A6AEDD00A66E41 /* RNSensorsAnalyticsModule.m in Sources */,
+				FC9EE6B1243739A900C45D16 /* SensorsDataModule.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

@@ -719,4 +719,27 @@ RCT_EXPORT_METHOD(trackChannelEvent:(NSString *)event properties:(nullable NSDic
     }
 }
 
+RCT_EXPORT_METHOD(onPageShow:(NSString *)pageName) {
+  @try {
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Warc-performSelector-leaks"
+
+      Class sa = NSClassFromString(@"SensorsAnalyticsSDK");
+      SEL shared = NSSelectorFromString(@"sharedInstance");
+      if (![sa respondsToSelector:shared]) {
+          return;
+      }
+      id sdk = [sa performSelector:shared];
+      SEL onPageShow = NSSelectorFromString(@"trackViewScreen:withProperties:");
+      if (![sdk respondsToSelector:onPageShow]) {
+          return;
+      }
+      [sdk performSelector:onPageShow withObject:pageName withObject:nil];
+#pragma clang diagnostic pop
+
+  } @catch (NSException *exception) {
+//      NSLog(@"[RNSensorsAnalytics] error:%@",exception);
+  }
+}
+
 @end

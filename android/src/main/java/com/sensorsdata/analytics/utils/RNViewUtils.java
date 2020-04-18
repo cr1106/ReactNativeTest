@@ -1,4 +1,4 @@
-package com.sensorsdata.analytics.rnsdk.utils;
+package com.sensorsdata.analytics.utils;
 
 import android.view.View;
 
@@ -14,9 +14,11 @@ import android.view.ViewGroup;
 import android.view.View;
 import android.view.ViewParent;
 
-public class RNSensorsViewUtils {
+public class RNViewUtils {
 
     private static WeakReference onTouchViewReference;
+    private static String currentTitle;
+    private static String currentUrl;
 
     public static void setOnTouchView(View nativeTargetView) {
         onTouchViewReference = new WeakReference(nativeTargetView);
@@ -59,7 +61,6 @@ public class RNSensorsViewUtils {
     public static View getClickViewInChild(int viewId, ViewGroup currentView) {
         int currentViewCount = currentView.getChildCount();
         for (int i = 0; i < currentViewCount; i++) {
-            SALog.i("SA.RN----->childId", viewId + "");
             View childView = currentView.getChildAt(i);
             if (childView != null) {
                 if (childView.getId() == viewId) {
@@ -106,5 +107,22 @@ public class RNSensorsViewUtils {
         }
     }
 
+    public static void saveUrlAndTitle(String url,String title){
+        if(url != null ){
+            if(title != null){
+                currentTitle = title;
+            }else{
+                currentTitle = url;
+            }
+            currentUrl = url;
+        }
+    }
 
+    public static String getTitle(){
+        return currentTitle;
+    }
+
+    public static String getUrl(){
+        return currentUrl;
+    }
 }

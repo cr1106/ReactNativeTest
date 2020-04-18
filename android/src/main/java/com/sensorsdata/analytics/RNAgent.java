@@ -1,19 +1,20 @@
-package com.sensorsdata.analytics.rnsdk;
+package com.sensorsdata.analytics;
 
 import android.view.MotionEvent;
 import android.view.MotionEvent.*;
 import android.view.View;
 import android.view.ViewGroup;
 import com.facebook.react.bridge.ReadableMap;
-import com.sensorsdata.analytics.rnsdk.RNSensorsAnalyticsModule;
-import com.sensorsdata.analytics.rnsdk.utils.RNSensorsViewUtils;
+import com.sensorsdata.analytics.RNSensorsAnalyticsModule;
+import com.sensorsdata.analytics.utils.RNViewUtils;
 
 import com.facebook.react.uimanager.JSTouchDispatcher;
 import com.facebook.react.uimanager.events.EventDispatcher;
 import com.sensorsdata.analytics.android.sdk.SALog;
 import com.sensorsdata.analytics.android.sdk.SensorsDataAPI;
+import com.sensorsdata.analytics.android.sdk.util.SensorsDataUtils;
 import com.sensorsdata.analytics.android.sdk.SensorsDataAutoTrackHelper;
-import com.sensorsdata.analytics.rnsdk.utils.TouchTargetHelper;
+import com.sensorsdata.analytics.utils.RNTouchTargetHelper;
 
 import java.lang.reflect.Field;
 import java.util.WeakHashMap;
@@ -40,24 +41,37 @@ public class RNAgent {
             }
             if (viewGroup != null) {
                 View nativeTargetView =
-                        TouchTargetHelper.findTouchTargetView(
+                        RNTouchTargetHelper.findTouchTargetView(
                                 new float[] {event.getX(), event.getY()}, viewGroup);
                 if (nativeTargetView != null) {
-                    View reactTargetView = TouchTargetHelper.findClosestReactAncestor(nativeTargetView);
+                    View reactTargetView = RNTouchTargetHelper.findClosestReactAncestor(nativeTargetView);
                     if (reactTargetView != null) {
                         nativeTargetView = reactTargetView;
                     }
                 }
                 if (nativeTargetView != null) {
-                    RNSensorsViewUtils.setOnTouchView(nativeTargetView);
+                    RNViewUtils.setOnTouchView(nativeTargetView);
                 }
             }
         }
     }
 
-    public static void tarckViewScreen(String url){
+    public static void trackPageView(String url, JSONObject properties){
         try{
-            SensorsDataAPI.sharedInstance().trackViewScreen(url,null);
+            String title = null;
+            if(properties == null){
+                properties = new JSONObject();
+            }
+            if(properties.has("title")){
+                title = properties.getString("title");
+                properties.put("$title",title);
+                properties.remove("title");
+            }else{
+                properties.put("$title",url);
+            }
+            properties.put("$screen_name",url);
+            RNViewUtils.saveUrlAndTitle(url,title);
+            SensorsDataAPI.sharedInstance().trackViewScreen(url, properties);
         }catch(Exception e){
             SALog.printStackTrace(e);
         }
@@ -65,9 +79,16 @@ public class RNAgent {
 
     public static void trackViewClick(int viewId){
         try {
-            View clickView = RNSensorsViewUtils.getTouchViewByTag(viewId);
+            View clickView = RNViewUtils.getTouchViewByTag(viewId);
             if (clickView != null) {
-                SensorsDataAutoTrackHelper.trackViewOnClick(clickView, true);
+                JSONObject properties = new JSONObject();
+                if(RNViewUtils.getTitle() != null){
+                    properties.put("$title",RNViewUtils.getTitle());
+                }
+                if(RNViewUtils.getUrl() != null){
+                    properties.put("$screen_name",RNViewUtils.getUrl());
+                }
+                SensorsDataAPI.sharedInstance().trackViewAppClick(clickView,properties);
             }
         } catch (Exception e) {
             SALog.printStackTrace(e);

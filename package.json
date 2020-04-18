@@ -1,6 +1,6 @@
 {
   "name": "chenru-react-native-test",
-  "version": "0.0.2",
+  "version": "0.0.30",
   "private": false,
   "description": "RN 组件",
   "main": "index.js",
@@ -17,5 +17,6 @@
     "type": "git",
     "url": "git+https://github.com/cr1106/ReactNativeTest.git"
   },
-   "homepage": "https://github.com/cr1106/ReactNativeTest"
+  "homepage": "https://github.com/cr1106/ReactNativeTest",
+  "dependencies": {}
 }

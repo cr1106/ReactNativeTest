@@ -1,4 +1,4 @@
-package com.sensorsdata.analytics.rnsdk.utils;
+package com.sensorsdata.analytics.utils;
 
 import android.graphics.Matrix;
 import android.graphics.PointF;
@@ -13,7 +13,7 @@ import com.facebook.react.uimanager.ReactCompoundView;
 import com.facebook.react.uimanager.ReactCompoundViewGroup;
 import com.facebook.react.uimanager.ReactPointerEventsView;
 
-public class TouchTargetHelper {
+public class RNTouchTargetHelper {
     private static final float[] mEventCoords = new float[2];
     private static final Matrix mInverseMatrix = new Matrix();
     private static final float[] mMatrixTransformCoords = new float[2];
