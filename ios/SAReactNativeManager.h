@@ -25,9 +25,22 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface SAReactNativeManager : NSObject
 
+/**
+ @abstract
+ 触发 React Native 点击事件
+
+ @param reactTag  React Native 分配的唯一标识符
+ */
 + (void)trackViewClick:(NSNumber *)reactTag;
 
-+ (void)trackPageView:(nullable NSString *)pageName properties:(nullable NSDictionary *)properties;
+/**
+ @abstract
+ 触发 React Native 页面浏览事件
+
+ @param pageName  页面名称
+ @param properties  自定义页面属性
+ */
++ (void)trackViewScreen:(NSString *)pageName properties:(nullable NSDictionary *)properties;
 
 @end
 

@@ -7,12 +7,14 @@
 //
 
 #import "RNSensorsAnalyticsModule.h"
-#import <React/RCTBridge.h>
-#import <React/RCTEventDispatcher.h>
-#import <React/RCTRootView.h>
-#import <React/RCTUIManager.h>
-#import <SensorsAnalyticsSDK/SensorsAnalyticsSDK.h>
 #import "SAReactNativeManager.h"
+
+#if __has_include("SensorsAnalyticsSDK.h")
+#import "SensorsAnalyticsSDK.h"
+#else
+#import <SensorsAnalyticsSDK/SensorsAnalyticsSDK.h>
+#endif
+
 
 @implementation RNSensorsAnalyticsModule
 
@@ -213,11 +215,14 @@ RCT_EXPORT_METHOD(logout){
  */
 RCT_EXPORT_METHOD(trackViewScreen:(NSString *)url withProperties:(NSDictionary *)properties){
     @try {
-        [[SensorsAnalyticsSDK sharedInstance] trackViewScreen:url withProperties:properties];
+        if (!url.length) {
+            NSLog(@"[RNSensorsAnalytics] error: url is empty ！！！");
+            return;
+        }
+        [SAReactNativeManager trackViewScreen:url properties:properties];
     } @catch (NSException *exception) {
         NSLog(@"[RNSensorsAnalytics] error:%@",exception);
     }
-    
 }
 /**
  * 导出 set 方法给 RN 使用.
@@ -720,20 +725,6 @@ RCT_EXPORT_METHOD(trackChannelEvent:(NSString *)event properties:(nullable NSDic
     } @catch (NSException *exception) {
         NSLog(@"[RNSensorsAnalytics] error:%@",exception);
     }
-}
-
-RCT_EXPORT_METHOD(onPagePrepare:(NSString *)pageName) {
-
-}
-
-/**
- * React Native 手动采集页面浏览事件
- *
- * @param pageName  页面名称
- *
-*/
-RCT_EXPORT_METHOD(trackPageView:(NSString *)pageName properties:(NSDictionary *)properties) {
-    [SAReactNativeManager trackPageView:pageName properties:properties];
 }
 
 @end
