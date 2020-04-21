@@ -268,7 +268,7 @@ public class RNSensorsAnalyticsModule extends ReactContextBaseJavaModule {
      * <p>
      * 此方法用于 RN 中 Tab 切换页面的时候调用，用于记录 $AppViewScreen 事件.
      *
-     * @param url 页面的 url  记录到 $url 字段中(如果不需要此属性，可以传 null ).
+     * @param url 页面的 url  记录到 $url 字段中.
      * @param properties 页面的属性.
      * <p>
      * 注：为保证记录到的 $AppViewScreen 事件和 Auto Track 采集的一致，
@@ -284,7 +284,9 @@ public class RNSensorsAnalyticsModule extends ReactContextBaseJavaModule {
     @ReactMethod
     public void trackViewScreen(String url, ReadableMap properties) {
         try {
-            RNAgent.trackPageView(url, RNUtils.convertToJSONObject(properties));
+            if (url != null) {
+                RNAgent.trackViewScreen(url, RNUtils.convertToJSONObject(properties));
+            }
         } catch (Exception e) {
             e.printStackTrace();
             Log.e(LOGTAG, e.toString() + "");
@@ -662,13 +664,6 @@ public class RNSensorsAnalyticsModule extends ReactContextBaseJavaModule {
         } catch (Exception e) {
             e.printStackTrace();
             Log.e(LOGTAG, e.toString() + "");
-        }
-    }
-
-    @ReactMethod
-    public void trackPageView(String url, ReadableMap properties) {
-        if (url != null) {
-            RNAgent.trackPageView(url, RNUtils.convertToJSONObject(properties));
         }
     }
 }

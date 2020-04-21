@@ -305,18 +305,6 @@ sensorsdataResetViewRN = function () {
     injectReactNavigation(reactNavigationPath4X, 2, true)
 };
 
-// 判断配置项 package.json 中是否开启了对应事件的自动采集
-checkSensorsConfig = function () {
-    if (userPackageObj && userPackageObj['sensorsdata']) {
-        if (userPackageObj['sensorsdata']['click']) {
-            sensorsdataHookClickRN(RNClickFilePath);
-        }
-        if (userPackageObj['sensorsdata']['pageview']) {
-            sensorsdataHookViewRN();
-        }
-    }
-    return;
-};
 // 全部 hook 文件恢复
 resetAllSensorsdataHookRN = function () {
     sensorsdataResetRN(RNClickFilePath);
@@ -325,7 +313,8 @@ resetAllSensorsdataHookRN = function () {
 // 命令行
 switch (process.argv[2]) {
     case '-run':
-        checkSensorsConfig();
+         sensorsdataHookClickRN(RNClickFilePath);
+         sensorsdataHookViewRN();
         break;
     case '-reset':
         resetAllSensorsdataHookRN();
