@@ -7,19 +7,31 @@
 //
 
 #import "RNSensorsDataModule.h"
-#import <React/RCTBridge.h>
 #import "SAReactNativeManager.h"
 
 @implementation RNSensorsDataModule
 
 RCT_EXPORT_MODULE(RNSensorsDataModule)
 
+/**
+ * React Native 自动采集点击事件
+ *
+ * @param reactTag  View 唯一标识符
+ *
+*/
 RCT_EXPORT_METHOD(trackViewClick:(NSInteger)reactTag) {
     [SAReactNativeManager trackViewClick:@(reactTag)];
 }
 
-RCT_EXPORT_METHOD(trackPageView:(NSDictionary *)properties) {
-    [SAReactNativeManager trackPageView:nil properties:properties];
+/**
+ * React Native 自动采集页面浏览事件
+ *
+ * @param properties  页面相关消息
+ *
+*/
+RCT_EXPORT_METHOD(trackViewScreen:(NSDictionary *)properties) {
+    // 自动采集页面浏览时 pageName 在 properties
+    [SAReactNativeManager trackViewScreen:@"" properties:properties];
 }
 
 @end

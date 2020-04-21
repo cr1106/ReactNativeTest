@@ -23,9 +23,15 @@
 #endif
 
 #import "SAReactNativeManager.h"
+#import <React/RCTBridge.h>
+#import <React/RCTRootView.h>
+#import <React/RCTUIManager.h>
 
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Warc-performSelector-leaks"
+#if __has_include("SensorsAnalyticsSDK.h")
+#import "SensorsAnalyticsSDK.h"
+#else
+#import <SensorsAnalyticsSDK/SensorsAnalyticsSDK.h>
+#endif
 
 @interface SAReactNativeManager ()
 
@@ -39,63 +45,49 @@
 
 #pragma mark - public
 + (void)trackViewClick:(NSNumber *)reactTag {
+    if (![[SensorsAnalyticsSDK sharedInstance] isAutoTrackEnabled]) {
+        return;
+    }
+    // 忽略 $AppClick 事件
+    if (![[SensorsAnalyticsSDK sharedInstance] isAutoTrackEventTypeIgnored:SensorsAnalyticsEventTypeAppClick]) {
+        return;
+    }
     dispatch_async(dispatch_get_main_queue(), ^{
         UIView *view = [[SAReactNativeManager sharedInstance] viewForTag:reactTag];
         NSDictionary *properties = [[SAReactNativeManager sharedInstance] viewClickPorperties];
-        [SAReactNativeManager trackViewAppClick:view properties:properties];
+        [[SensorsAnalyticsSDK sharedInstance] trackViewAppClick:view withProperties:properties];
     });
 }
 
-+ (void)trackPageView:(nullable NSString *)pageName properties:(nullable NSDictionary *)properties {
-    BOOL isIgnore = [properties[@"sensorsdataignore"] boolValue];
-    if (isIgnore) {
++ (void)trackViewScreen:(NSString *)pageName properties:(nullable NSDictionary *)properties {
+    if (![[SensorsAnalyticsSDK sharedInstance] isAutoTrackEnabled]) {
         return;
     }
-    pageName = pageName ?: properties[@"sensorsdataurl"];
-
-    if (!pageName) {
-        NSLog(@"page view did not empty！！！");
+    // 忽略 $AppViewScreen 事件
+    if (![[SensorsAnalyticsSDK sharedInstance] isAutoTrackEventTypeIgnored:SensorsAnalyticsEventTypeAppViewScreen]) {
         return;
     }
-
+    if (!pageName.length) {
+        pageName = properties[@"sensorsdataurl"];
+    }
+    if (!pageName || ![pageName isKindOfClass:NSString.class]) {
+        NSLog(@"[RNSensorsAnalytics] error: page name is not valid！！！");
+        return;
+    }
     NSMutableDictionary *customProps = [properties[@"sensorsdataparams"] mutableCopy];
-    NSString *title = customProps[@"title"];
+    NSString *title = [customProps[@"title"] copy];
+    // 移除字典中 title 字段，使用 $title 字段代替
     [customProps removeObjectForKey:@"title"];
 
-    NSDictionary *pageProps = [[SAReactNativeManager sharedInstance] pageViewProperties:pageName title:title];
+    NSDictionary *pageProps = [[SAReactNativeManager sharedInstance] viewScreenProperties:pageName title:title];
     NSMutableDictionary *props = [NSMutableDictionary dictionary];
     [props addEntriesFromDictionary:customProps];
     [props addEntriesFromDictionary:pageProps];
-    [SAReactNativeManager track:@"$AppViewScreen" properties:props];
-}
 
-#pragma mark - hook SensorsAnalytics SDK method
-+ (void)trackViewAppClick:(UIView *)view properties:(NSDictionary *)properties {
-    Class sa = NSClassFromString(@"SensorsAnalyticsSDK");
-    SEL sharedSEL = NSSelectorFromString(@"sharedInstance");
-    if (![sa respondsToSelector:sharedSEL]) {
-        return;
-    }
-    id sdk = [sa performSelector:sharedSEL];
-    SEL trackSEL = NSSelectorFromString(@"trackViewAppClick:withProperties:");
-    if (![sdk respondsToSelector:trackSEL]) {
-        return;
-    }
-    [sdk performSelector:trackSEL withObject:view withObject:properties];
-}
-
-+ (void)track:(NSString *)event properties:(NSDictionary *)properties {
-    Class sa = NSClassFromString(@"SensorsAnalyticsSDK");
-    SEL sharedSEL = NSSelectorFromString(@"sharedInstance");
-    if (![sa respondsToSelector:sharedSEL]) {
-        return;
-    }
-    id sdk = [sa performSelector:sharedSEL];
-    SEL trackSEL = NSSelectorFromString(@"track:withProperties:");
-    if (![sdk respondsToSelector:trackSEL]) {
-        return;
-    }
-    [sdk performSelector:trackSEL withObject:event withObject:properties];
+    dispatch_async(dispatch_get_main_queue(), ^{
+        UIViewController *tempCaller = [UIViewController new];
+        [[SensorsAnalyticsSDK sharedInstance] trackViewScreen:tempCaller properties:props];
+    });
 }
 
 #pragma mark - private
@@ -110,30 +102,16 @@
 
 - (UIView *)viewForTag:(NSNumber *)reactTag {
     UIViewController *root = [[[UIApplication sharedApplication] keyWindow] rootViewController];
-    UIView *rootView = [root view];
-
-    SEL bridgeSEL = NSSelectorFromString(@"bridge");
-    if (![NSStringFromClass(rootView.class) isEqualToString:@"RCTRootView"] || ![rootView respondsToSelector:bridgeSEL]) {
-        return nil;
+    UIView *view = [root view];
+    if (![view isKindOfClass:NSClassFromString(@"RCTRootView")]) {
+        return nil;;
     }
-    id bridge = [rootView performSelector:bridgeSEL];
-    SEL uiManagerSEL = NSSelectorFromString(@"uiManager");
-    if (![bridge respondsToSelector:uiManagerSEL]) {
-        return nil;
-    }
-    id uiManager = [bridge performSelector:uiManagerSEL];
-    SEL tagSEL = NSSelectorFromString(@"viewForReactTag:");
-    if (![uiManager respondsToSelector:tagSEL]) {
-        return nil;
-    }
-    UIView *view = [uiManager performSelector:tagSEL withObject:reactTag];
-    if (!view) {
-        return nil;
-    }
-    return view;
+    RCTRootView *rootView = (RCTRootView *)view;
+    RCTUIManager *manager = rootView.bridge.uiManager;
+    return [manager viewForReactTag:reactTag];
 }
 
-- (NSDictionary *)pageViewProperties:(NSString *)pageName title:(NSString *)title {
+- (NSDictionary *)viewScreenProperties:(NSString *)pageName title:(NSString *)title {
     _referrer = _pageName;
     _pageName = pageName;
     _title = title ?: pageName;
@@ -150,5 +128,3 @@
 }
 
 @end
-
-#pragma clang diagnostic pop
