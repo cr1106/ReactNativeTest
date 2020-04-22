@@ -49,7 +49,7 @@
         return;
     }
     // 忽略 $AppClick 事件
-    if (![[SensorsAnalyticsSDK sharedInstance] isAutoTrackEventTypeIgnored:SensorsAnalyticsEventTypeAppClick]) {
+    if ([[SensorsAnalyticsSDK sharedInstance] isAutoTrackEventTypeIgnored:SensorsAnalyticsEventTypeAppClick]) {
         return;
     }
     dispatch_async(dispatch_get_main_queue(), ^{
@@ -64,7 +64,7 @@
         return;
     }
     // 忽略 $AppViewScreen 事件
-    if (![[SensorsAnalyticsSDK sharedInstance] isAutoTrackEventTypeIgnored:SensorsAnalyticsEventTypeAppViewScreen]) {
+    if ([[SensorsAnalyticsSDK sharedInstance] isAutoTrackEventTypeIgnored:SensorsAnalyticsEventTypeAppViewScreen]) {
         return;
     }
     if (!pageName.length) {
@@ -81,8 +81,8 @@
 
     NSDictionary *pageProps = [[SAReactNativeManager sharedInstance] viewScreenProperties:pageName title:title];
     NSMutableDictionary *props = [NSMutableDictionary dictionary];
-    [props addEntriesFromDictionary:customProps];
     [props addEntriesFromDictionary:pageProps];
+    [props addEntriesFromDictionary:customProps];
 
     dispatch_async(dispatch_get_main_queue(), ^{
         UIViewController *tempCaller = [UIViewController new];
