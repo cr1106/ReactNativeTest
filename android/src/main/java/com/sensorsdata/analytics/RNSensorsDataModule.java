@@ -86,7 +86,7 @@ public class RNSensorsDataModule extends ReactContextBaseJavaModule {
     }
 
     @ReactMethod
-    public void trackPageView(ReadableMap params) {
+    public void trackViewScreen(ReadableMap params) {
         //关闭 AutoTrack
         if (!SensorsDataAPI.sharedInstance().isAutoTrackEnabled()) {
             return;
@@ -109,7 +109,7 @@ public class RNSensorsDataModule extends ReactContextBaseJavaModule {
                 if(url == null){
                     return;
                 }
-                RNAgent.trackPageView(url, properties);
+                RNAgent.trackViewScreen(url, properties);
             }
         }catch(Exception e){
             SALog.printStackTrace(e);

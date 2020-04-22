@@ -90,7 +90,6 @@ navigationString3 = function (prevStateVarName, currentStateVarName, actionName)
     if (actionName) {
         script = `${script}
                                     var type = ${actionName}.type;
-                                    var iosOnPagePrepare = false;
                                     var iosOnPageShow = false;
         
                                     if (require('react-native').Platform.OS === 'android') {
@@ -107,8 +106,8 @@ navigationString3 = function (prevStateVarName, currentStateVarName, actionName)
                                             return;
                                         }
                                     }
-        
-                                            
+
+
                                             `;
     }
 
@@ -120,11 +119,11 @@ navigationString3 = function (prevStateVarName, currentStateVarName, actionName)
                           return;
                     }
                  }
-                require('react-native').NativeModules.RNSensorsDataModule.trackPageView(params);
+                require('react-native').NativeModules.RNSensorsDataModule.trackViewScreen(params);
             } else if (require('react-native').Platform.OS === 'ios') {
                 if (!${actionName} || iosOnPageShow) {
-                    require('react-native').NativeModules.RNSensorsDataModule.trackPageView(params);
-                } 
+                    require('react-native').NativeModules.RNSensorsDataModule.trackViewScreen(params);
+                }
             }`;
     return script;
 };
@@ -141,7 +140,7 @@ navigationEventString = function () {
                 payload.state.params = {sensorsdataurl:payload.state.routeName};
             }
             if(type == 'didFocus') {
-                require('react-native').NativeModules.RNSensorsDataModule.trackPageView(payload.state.params);
+                require('react-native').NativeModules.RNSensorsDataModule.trackViewScreen(payload.state.params);
             }
           }
           `;
@@ -159,7 +158,7 @@ navigationString = function (currentStateVarName, actionName) {
                 if(!route.params["sensorsdataurl"]){
                   route.params.sensorsdataurl = route.routeName;
                 }
-                        return route.params; 
+                        return route.params;
                     } else {
                  route.params = {sensorsdataurl:route.routeName};
               }
@@ -179,7 +178,7 @@ navigationString = function (currentStateVarName, actionName) {
 
     script = `${script} var params = $$$getActivePageName$$$(${currentStateVarName});
             if (require('react-native').Platform.OS === 'android') {
-            require('react-native').NativeModules.RNSensorsDataModule.trackPageView(params);}`;
+            require('react-native').NativeModules.RNSensorsDataModule.trackViewScreen(params);}`;
     return script;
 };
 

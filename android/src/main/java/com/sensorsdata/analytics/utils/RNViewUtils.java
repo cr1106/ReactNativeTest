@@ -108,13 +108,11 @@ public class RNViewUtils {
     }
 
     public static void saveUrlAndTitle(String url,String title){
-        if(url != null ){
-            if(title != null){
-                currentTitle = title;
-            }else{
-                currentTitle = url;
-            }
-            currentUrl = url;
+        currentUrl = url;
+        if(title != null){
+            currentTitle = title;
+        }else{
+            currentTitle = url;
         }
     }
 

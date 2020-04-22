@@ -56,7 +56,7 @@ public class RNAgent {
         }
     }
 
-    public static void trackPageView(String url, JSONObject properties){
+    public static void trackViewScreen(String url, JSONObject properties){
         try{
             String title = null;
             if(properties == null){
@@ -66,10 +66,12 @@ public class RNAgent {
                 title = properties.getString("title");
                 properties.put("$title",title);
                 properties.remove("title");
-            }else{
+            }else if(url != null){
                 properties.put("$title",url);
             }
-            properties.put("$screen_name",url);
+            if (url != null) {
+                properties.put("$screen_name", url);
+            }
             RNViewUtils.saveUrlAndTitle(url,title);
             SensorsDataAPI.sharedInstance().trackViewScreen(url, properties);
         }catch(Exception e){
