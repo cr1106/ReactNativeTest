@@ -272,13 +272,13 @@ public class RNSensorsAnalyticsModule extends ReactContextBaseJavaModule {
      * @param properties 页面的属性.
      * <p>
      * 注：为保证记录到的 $AppViewScreen 事件和 Auto Track 采集的一致，
-     * 需要传入 title（页面的标题） 、$screen_name （页面的名称，即 包名.类名）字段.
+     * 需要传入 $title（页面的标题） 、$screen_name （页面的名称，即 包名.类名）字段.
      * <p>
      * RN 中使用示例：
      * <Button
      * title="Button"
      * onPress={()=>
-     * RNSensorsAnalyticsModule.trackViewScreen(url, {"title":"RN主页","$screen_name":"cn.sensorsdata.demo.RNHome"})}>
+     * RNSensorsAnalyticsModule.trackViewScreen(url, {"$title":"RN主页","$screen_name":"cn.sensorsdata.demo.RNHome"})}>
      * </Button>
      */
     @ReactMethod
