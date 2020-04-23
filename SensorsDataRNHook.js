@@ -3,7 +3,6 @@
 var path = require("path"),
     fs = require("fs"),
     dir = path.resolve(__dirname, ".."),
-    userPackageObj = require("../../package.json"); // 神策的配置文件，配置是否开启自动采集采集点击和 pageview 事件
 var reactNavigationPath = dir + '/react-navigation',
     reactNavigationPath3X = dir + '/@react-navigation/native/src',
     reactNavigationPath4X = dir + '/@react-navigation/native/lib/module';
