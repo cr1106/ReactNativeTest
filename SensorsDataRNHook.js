@@ -2,7 +2,7 @@
 // 系统变量
 var path = require("path"),
     fs = require("fs"),
-    dir = path.resolve(__dirname, ".."),
+    dir = path.resolve(__dirname, "..");
 var reactNavigationPath = dir + '/react-navigation',
     reactNavigationPath3X = dir + '/@react-navigation/native/src',
     reactNavigationPath4X = dir + '/@react-navigation/native/lib/module';
