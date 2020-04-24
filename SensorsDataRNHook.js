@@ -9,19 +9,6 @@ var reactNavigationPath = dir + '/react-navigation',
 // 自定义变量
 // RN 控制点击事件 Touchable.js 源码文件
 var RNClickFilePath = dir + '/react-native/Libraries/Components/Touchable/Touchable.js';
-var RNClickableFiles = [dir + '/react-native/Libraries/Renderer/src/renderers/native/ReactNativeFiber.js',
-dir + '/react-native/Libraries/Renderer/src/renderers/native/ReactNativeFiber-dev.js',
-dir + '/react-native/Libraries/Renderer/src/renderers/native/ReactNativeFiber-prod.js',
-dir + '/react-native/Libraries/Renderer/src/renderers/native/ReactNativeFiber-profiling.js',
-dir + '/react-native/Libraries/Renderer/ReactNativeFiber-dev.js',
-dir + '/react-native/Libraries/Renderer/ReactNativeFiber-prod.js',
-dir + '/react-native/Libraries/Renderer/oss/ReactNativeRenderer-dev.js',
-dir + '/react-native/Libraries/Renderer/oss/ReactNativeRenderer-prod.js',
-dir + '/react-native/Libraries/Renderer/ReactNativeStack-dev.js',
-dir + '/react-native/Libraries/Renderer/ReactNativeStack-prod.js',
-dir + '/react-native/Libraries/Renderer/oss/ReactNativeRenderer-profiling.js',
-dir + '/react-native/Libraries/Renderer/ReactNativeRenderer-dev.js',
-dir + '/react-native/Libraries/Renderer/ReactNativeRenderer-prod.js'];
 
 // click 需 hook 的自执行代码
 var sensorsdataClickHookCode = "(function(thatThis){ try {var ReactNative = require('react-native');thatThis.props.onPress && ReactNative.NativeModules.RNSensorsDataModule.trackViewClick(ReactNative.findNodeHandle(thatThis))} catch (error) { throw new Error('SensorsData RN Hook Code 调用异常: ' + error);}})(this); /* SENSORSDATA HOOK */ ";
@@ -46,68 +33,6 @@ sensorsdataHookClickRN = function () {
     fs.renameSync(RNClickFilePath, `${RNClickFilePath}_sensorsdata_backup`);
     // 重写 Touchable.js 文件
     fs.writeFileSync(RNClickFilePath, hookedContent, 'utf8');
-};
-sensorsdataHookClickableRN = function (reset = false) {
-    RNClickableFiles.forEach(function (onefile) {
-        if (fs.existsSync(onefile)) {
-            if (reset) {
-                // 读取文件内容
-                var fileContent = fs.readFileSync(onefile, "utf8");
-                // 未被 hook 过代码，不需要处理
-                if (fileContent.indexOf('SENSORSDATA HOOK') == -1) {
-                    return;
-                }
-                // 检查备份文件是否存在
-                var backFilePath = `${onefile}_sensorsdata_backup`;
-                if (!fs.existsSync(backFilePath)) {
-                    throw `File: ${backFilePath} not found, Please rm -rf node_modules and npm install again`;
-                }
-                // 将备份文件重命名恢复 + 自动覆盖被 hook 过的同名文件
-                fs.renameSync(backFilePath, onefile);
-            } else {
-                // 读取文件内容
-                var content = fs.readFileSync(onefile, 'utf8');
-                // 已经 hook 过了，不需要再次 hook
-                if (content.indexOf('SENSORSDATA HOOK') > -1) {
-                    return;
-                }
-                // 获取 hook 的代码插入的位置
-                var objRe = /UIManager\.createView\([\s\S]{1,60}\.uiViewClassName,[\s\S]*?\)[,;]/
-                var match = objRe.exec(content);
-                if (!match)
-                    throw "can't inject clickable js";
-                var lastParentheses = content.lastIndexOf(')', match.index);
-                var lastCommaIndex = content.lastIndexOf(',', lastParentheses);
-                if (lastCommaIndex == -1)
-                    throw "can't inject clickable js,and lastCommaIndex is -1";
-                var nextCommaIndex = content.indexOf(',', match.index);
-                if (nextCommaIndex == -1)
-                    throw "can't inject clickable js, and nextCommaIndex is -1";
-                var propsName = lastArgumentName(content, lastCommaIndex).trim();
-                var tagName = lastArgumentName(content, nextCommaIndex).trim();
-                var functionBody =
-                    `var clickable = false;
-                        if(${propsName}.onStartShouldSetResponder){
-                            clickable = true;
-                        }
-                        require('react-native').NativeModules.RNSensorsDataModule.prepareView(${tagName}, clickable);
-                        `;
-                var call = addTryCatch(functionBody);
-                var lastReturn = content.lastIndexOf('return', match.index);
-                var splitIndex = match.index;
-                if (lastReturn > lastParentheses) {
-                    splitIndex = lastReturn;
-                }
-                var hookedContent = `${content.substring(0, splitIndex)}\n${call}\n${content.substring(splitIndex)}`
-
-                // 备份源文件
-                fs.renameSync(onefile, `${onefile}_sensorsdata_backup`);
-                // 重写文件
-                fs.writeFileSync(onefile, hookedContent, 'utf8');
-            }
-        }
-    });
-
 };
 // 恢复被 hook 过的代码
 sensorsdataResetRN = function (resetFilePath) {
@@ -135,14 +60,7 @@ addTryCatch = function (functionBody) {
         "    \n    } catch (error) { throw new Error('SensorsData RN Hook Code 调用异常: ' + error);}\n" +
         "})(this); /* SENSORSDATA HOOK */";
 }
-// 工具函数
-function lastArgumentName(content, index){
-	--index;
-	var lastComma = content.lastIndexOf(',', index);
-	var lastParentheses = content.lastIndexOf('(', index);
-	var start = Math.max(lastComma, lastParentheses);
-	return content.substring(start + 1, index + 1);
-}
+
 
 // hook 代码实现 PageView 事件采集;
 
@@ -378,7 +296,7 @@ sensorsdataHookViewRN = function () {
     injectReactNavigation(reactNavigationPath4X, 2)
 };
 
-// 恢复被 hook 的 pageview 文件
+// 恢复被 hook 的 view 文件
 sensorsdataResetViewRN = function () {
     injectReactNavigation(reactNavigationPath, 1, true);
     injectReactNavigation(reactNavigationPath3X, 2, true);
@@ -389,17 +307,12 @@ sensorsdataResetViewRN = function () {
 resetAllSensorsdataHookRN = function () {
     sensorsdataResetRN(RNClickFilePath);
     sensorsdataResetViewRN();
-    sensorsdataHookClickableRN(true);
-};
-allSensorsdataHookRN = function () {
-    sensorsdataHookClickRN(RNClickFilePath);
-    sensorsdataHookViewRN();
-    sensorsdataHookClickableRN();
 };
 // 命令行
 switch (process.argv[2]) {
     case '-run':
-        allSensorsdataHookRN();
+         sensorsdataHookClickRN(RNClickFilePath);
+         sensorsdataHookViewRN();
         break;
     case '-reset':
         resetAllSensorsdataHookRN();
