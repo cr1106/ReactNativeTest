@@ -35,9 +35,8 @@
 
 @interface SAReactNativeManager ()
 
-@property (nonatomic, copy) NSString *pageName;
-@property (nonatomic, copy) NSString *title;
-@property (nonatomic, copy) NSString *referrer;
+@property (nonatomic, copy) NSString *currentScreenName;
+@property (nonatomic, copy) NSString *currentTitle;
 
 @end
 
@@ -59,7 +58,7 @@
     });
 }
 
-+ (void)trackViewScreen:(NSString *)pageName properties:(nullable NSDictionary *)properties {
++ (void)trackViewScreen:(NSString *)url properties:(nullable NSDictionary *)properties {
     if (![[SensorsAnalyticsSDK sharedInstance] isAutoTrackEnabled]) {
         return;
     }
@@ -67,28 +66,42 @@
     if ([[SensorsAnalyticsSDK sharedInstance] isAutoTrackEventTypeIgnored:SensorsAnalyticsEventTypeAppViewScreen]) {
         return;
     }
-    if (!pageName.length) {
-        pageName = properties[@"sensorsdataurl"];
-    }
-    if (!pageName || ![pageName isKindOfClass:NSString.class]) {
-        NSLog(@"[RNSensorsAnalytics] error: page name is not valid！！！");
+    if (url && ![url isKindOfClass:NSString.class]) {
+        NSLog(@"[RNSensorsAnalytics] error: url {%@} is not String Class ！！！", url);
         return;
     }
-    NSMutableDictionary *customProps = [properties[@"sensorsdataparams"] mutableCopy];
-    NSString *title = [customProps[@"title"] copy];
-    // 移除字典中 title 字段，使用 $title 字段代替
-    [customProps removeObjectForKey:@"title"];
+    NSString *screenName = properties[@"$screen_name"] ?: url;
+    NSString *title = properties[@"$title"];
 
-    NSDictionary *pageProps = [[SAReactNativeManager sharedInstance] viewScreenProperties:pageName title:title];
-    NSMutableDictionary *props = [NSMutableDictionary dictionary];
-    [props addEntriesFromDictionary:pageProps];
-    [props addEntriesFromDictionary:customProps];
+    NSDictionary *pageProps = [[SAReactNativeManager sharedInstance] viewScreenProperties:screenName title:title];
+    NSMutableDictionary *eventProps = [NSMutableDictionary dictionary];
+    [eventProps addEntriesFromDictionary:pageProps];
+    [eventProps addEntriesFromDictionary:properties];
 
-    dispatch_async(dispatch_get_main_queue(), ^{
-        UIViewController *tempCaller = [UIViewController new];
-        [[SensorsAnalyticsSDK sharedInstance] trackViewScreen:tempCaller properties:props];
-    });
+    [[SensorsAnalyticsSDK sharedInstance] trackViewScreen:url withProperties:eventProps];
 }
+
+#pragma mark - SDK Method
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Warc-performSelector-leaks"
++ (UIView *)rootView {
+    UIViewController *root = [[[UIApplication sharedApplication] keyWindow] rootViewController];
+    UIView *view = [root view];
+    if ([view isKindOfClass:RCTRootView.class]) {
+        return view;
+    }
+    Class utils = NSClassFromString(@"SAAutoTrackUtils");
+    if (!utils) {
+        return nil;
+    }
+    SEL currentCallerSEL = NSSelectorFromString(@"currentViewController");
+    if (![utils respondsToSelector:currentCallerSEL]) {
+        return nil;
+    }
+    UIViewController *caller = [utils performSelector:currentCallerSEL];
+    return caller.view;
+}
+#pragma clang diagnostic pop
 
 #pragma mark - private
 + (instancetype)sharedInstance {
@@ -101,29 +114,25 @@
 }
 
 - (UIView *)viewForTag:(NSNumber *)reactTag {
-    UIViewController *root = [[[UIApplication sharedApplication] keyWindow] rootViewController];
-    UIView *view = [root view];
-    if (![view isKindOfClass:NSClassFromString(@"RCTRootView")]) {
-        return nil;;
+    UIView *view = [SAReactNativeManager rootView];
+    if (![view isKindOfClass:RCTRootView.class]) {
+        return nil;
     }
     RCTRootView *rootView = (RCTRootView *)view;
     RCTUIManager *manager = rootView.bridge.uiManager;
     return [manager viewForReactTag:reactTag];
 }
 
-- (NSDictionary *)viewScreenProperties:(NSString *)pageName title:(NSString *)title {
-    _referrer = _pageName;
-    _pageName = pageName;
-    _title = title ?: pageName;
+- (NSDictionary *)viewScreenProperties:(NSString *)screenName title:(NSString *)title {
+    _currentScreenName = screenName;
+    _currentTitle = title ?: screenName;
     return [self viewClickPorperties];
 }
 
 - (NSDictionary *)viewClickPorperties {
     NSMutableDictionary *properties = [NSMutableDictionary dictionary];
-    properties[@"$screen_name"] = _pageName;
-    properties[@"$url"] = _pageName;
-    properties[@"$title"] = _title;
-    properties[@"$referrer"] = _referrer;
+    properties[@"$screen_name"] = _currentScreenName;
+    properties[@"$title"] = _currentTitle;
     return [properties copy];
 }
 
