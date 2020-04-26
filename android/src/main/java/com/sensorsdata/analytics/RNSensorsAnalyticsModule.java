@@ -266,25 +266,25 @@ public class RNSensorsAnalyticsModule extends ReactContextBaseJavaModule {
     /**
      * 导出 trackViewScreen 方法给 RN 使用.
      * <p>
-     * 此方法用于 RN 中 Tab 切换页面的时候调用，用于记录 $AppViewScreen 事件.
+     * 此方法用于 RN 中切换页面的时候调用，用于记录 $AppViewScreen 事件.
      *
-     * @param url 页面的 url  记录到 $url 字段中(如果不需要此属性，可以传 null ).
+     * @param url 页面的 url  记录到 $url 字段中.
      * @param properties 页面的属性.
      * <p>
      * 注：为保证记录到的 $AppViewScreen 事件和 Auto Track 采集的一致，
-     * 需要传入 $title（页面的title） 、$screen_name （页面的名称，即 包名.类名）字段.
+     * 需要传入 $title（页面的标题） 、$screen_name （页面的名称，即 包名.类名）字段.
      * <p>
      * RN 中使用示例：
      * <Button
      * title="Button"
      * onPress={()=>
-     * RNSensorsAnalyticsModule.trackViewScreen(null,{"$title":"RN主页","$screen_name":"cn.sensorsdata.demo.RNHome"})}>
+     * RNSensorsAnalyticsModule.trackViewScreen(url, {"$title":"RN主页","$screen_name":"cn.sensorsdata.demo.RNHome"})}>
      * </Button>
      */
     @ReactMethod
     public void trackViewScreen(String url, ReadableMap properties) {
         try {
-            RNAgent.trackPageView(url, RNUtils.convertToJSONObject(properties));
+            RNAgent.trackViewScreen(url, RNUtils.convertToJSONObject(properties));
         } catch (Exception e) {
             e.printStackTrace();
             Log.e(LOGTAG, e.toString() + "");
@@ -662,13 +662,6 @@ public class RNSensorsAnalyticsModule extends ReactContextBaseJavaModule {
         } catch (Exception e) {
             e.printStackTrace();
             Log.e(LOGTAG, e.toString() + "");
-        }
-    }
-
-    @ReactMethod
-    public void trackPageView(String url, ReadableMap properties) {
-        if (url != null) {
-            RNAgent.trackPageView(url, RNUtils.convertToJSONObject(properties));
         }
     }
 }

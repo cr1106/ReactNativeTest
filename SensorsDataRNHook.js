@@ -2,8 +2,7 @@
 // 系统变量
 var path = require("path"),
     fs = require("fs"),
-    dir = path.resolve(__dirname, ".."),
-    userPackageObj = require("../../package.json"); // 神策的配置文件，配置是否开启自动采集采集点击和 pageview 事件
+    dir = path.resolve(__dirname, "..");
 var reactNavigationPath = dir + '/react-navigation',
     reactNavigationPath3X = dir + '/@react-navigation/native/src',
     reactNavigationPath4X = dir + '/@react-navigation/native/lib/module';
@@ -78,7 +77,7 @@ navigationString3 = function (prevStateVarName, currentStateVarName, actionName)
             if(!route.params["sensorsdataurl"]){
               route.params.sensorsdataurl = route.routeName;
             }
-                    return route.params; 
+                    return route.params;
                 } else {
              route.params = {sensorsdataurl:route.routeName};
           }
@@ -90,9 +89,8 @@ navigationString3 = function (prevStateVarName, currentStateVarName, actionName)
     if (actionName) {
         script = `${script}
                                     var type = ${actionName}.type;
-                                    var iosOnPagePrepare = false;
                                     var iosOnPageShow = false;
-        
+
                                     if (require('react-native').Platform.OS === 'android') {
                                         if(type == 'Navigation/SET_PARAMS' || type == 'Navigation/COMPLETE_TRANSITION') {
                                             return;
@@ -107,8 +105,8 @@ navigationString3 = function (prevStateVarName, currentStateVarName, actionName)
                                             return;
                                         }
                                     }
-        
-                                            
+
+
                                             `;
     }
 
@@ -120,11 +118,11 @@ navigationString3 = function (prevStateVarName, currentStateVarName, actionName)
                           return;
                     }
                  }
-                require('react-native').NativeModules.RNSensorsDataModule.trackPageView(params);
+                require('react-native').NativeModules.RNSensorsDataModule.trackViewScreen(params);
             } else if (require('react-native').Platform.OS === 'ios') {
                 if (!${actionName} || iosOnPageShow) {
-                    require('react-native').NativeModules.RNSensorsDataModule.trackPageView(params);
-                } 
+                    require('react-native').NativeModules.RNSensorsDataModule.trackViewScreen(params);
+                }
             }`;
     return script;
 };
@@ -141,7 +139,7 @@ navigationEventString = function () {
                 payload.state.params = {sensorsdataurl:payload.state.routeName};
             }
             if(type == 'didFocus') {
-                require('react-native').NativeModules.RNSensorsDataModule.trackPageView(payload.state.params);
+                require('react-native').NativeModules.RNSensorsDataModule.trackViewScreen(payload.state.params);
             }
           }
           `;
@@ -159,7 +157,7 @@ navigationString = function (currentStateVarName, actionName) {
                 if(!route.params["sensorsdataurl"]){
                   route.params.sensorsdataurl = route.routeName;
                 }
-                        return route.params; 
+                        return route.params;
                     } else {
                  route.params = {sensorsdataurl:route.routeName};
               }
@@ -179,7 +177,7 @@ navigationString = function (currentStateVarName, actionName) {
 
     script = `${script} var params = $$$getActivePageName$$$(${currentStateVarName});
             if (require('react-native').Platform.OS === 'android') {
-            require('react-native').NativeModules.RNSensorsDataModule.trackPageView(params);}`;
+            require('react-native').NativeModules.RNSensorsDataModule.trackViewScreen(params);}`;
     return script;
 };
 
@@ -305,18 +303,6 @@ sensorsdataResetViewRN = function () {
     injectReactNavigation(reactNavigationPath4X, 2, true)
 };
 
-// 判断配置项 package.json 中是否开启了对应事件的自动采集
-checkSensorsConfig = function () {
-    if (userPackageObj && userPackageObj['sensorsdata']) {
-        if (userPackageObj['sensorsdata']['click']) {
-            sensorsdataHookClickRN(RNClickFilePath);
-        }
-        if (userPackageObj['sensorsdata']['pageview']) {
-            sensorsdataHookViewRN();
-        }
-    }
-    return;
-};
 // 全部 hook 文件恢复
 resetAllSensorsdataHookRN = function () {
     sensorsdataResetRN(RNClickFilePath);
@@ -325,7 +311,8 @@ resetAllSensorsdataHookRN = function () {
 // 命令行
 switch (process.argv[2]) {
     case '-run':
-        checkSensorsConfig();
+         sensorsdataHookClickRN(RNClickFilePath);
+         sensorsdataHookViewRN();
         break;
     case '-reset':
         resetAllSensorsdataHookRN();

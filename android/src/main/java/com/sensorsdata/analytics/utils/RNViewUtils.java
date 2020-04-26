@@ -18,7 +18,7 @@ public class RNViewUtils {
 
     private static WeakReference onTouchViewReference;
     private static String currentTitle;
-    private static String currentUrl;
+    private static String currentScreenName;
 
     public static void setOnTouchView(View nativeTargetView) {
         onTouchViewReference = new WeakReference(nativeTargetView);
@@ -107,22 +107,16 @@ public class RNViewUtils {
         }
     }
 
-    public static void saveUrlAndTitle(String url,String title){
-        if(url != null ){
-            if(title != null){
-                currentTitle = title;
-            }else{
-                currentTitle = url;
-            }
-            currentUrl = url;
-        }
+    public static void saveScreenAndTitle(String screenName,String title){
+        currentScreenName = screenName;
+        currentTitle = title;
     }
 
     public static String getTitle(){
         return currentTitle;
     }
 
-    public static String getUrl(){
-        return currentUrl;
+    public static String getScreenName(){
+        return currentScreenName;
     }
 }

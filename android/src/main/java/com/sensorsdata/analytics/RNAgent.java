@@ -56,21 +56,26 @@ public class RNAgent {
         }
     }
 
-    public static void trackPageView(String url, JSONObject properties){
+    public static void trackViewScreen(String url, JSONObject properties){
         try{
-            String title = null;
+            String screenName = url;
             if(properties == null){
                 properties = new JSONObject();
             }
-            if(properties.has("title")){
-                title = properties.getString("title");
-                properties.put("$title",title);
-                properties.remove("title");
-            }else{
-                properties.put("$title",url);
+            if(properties.has("$screen_name")){
+                screenName = properties.getString("$screen_name");
             }
-            properties.put("$screen_name",url);
-            RNViewUtils.saveUrlAndTitle(url,title);
+            String title = screenName;
+            if(properties.has("$title")){
+                title = properties.getString("$title");
+            }
+            if(screenName != null){
+                properties.put("$screen_name",screenName);
+            }
+            if(title != null){
+                properties.put("$title",title);
+            }
+            RNViewUtils.saveScreenAndTitle(screenName,title);
             SensorsDataAPI.sharedInstance().trackViewScreen(url, properties);
         }catch(Exception e){
             SALog.printStackTrace(e);
@@ -85,8 +90,8 @@ public class RNAgent {
                 if(RNViewUtils.getTitle() != null){
                     properties.put("$title",RNViewUtils.getTitle());
                 }
-                if(RNViewUtils.getUrl() != null){
-                    properties.put("$screen_name",RNViewUtils.getUrl());
+                if(RNViewUtils.getScreenName() != null){
+                    properties.put("$screen_name",RNViewUtils.getScreenName());
                 }
                 SensorsDataAPI.sharedInstance().trackViewAppClick(clickView,properties);
             }

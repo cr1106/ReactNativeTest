@@ -73,17 +73,31 @@ public class RNSensorsDataModule extends ReactContextBaseJavaModule {
 
     @ReactMethod
     public void trackViewClick(int viewId) {
+        //关闭 AutoTrack
+        if (!SensorsDataAPI.sharedInstance().isAutoTrackEnabled()) {
+            return;
+        }
+        //$AppClick 被过滤
+        if (SensorsDataAPI.sharedInstance().isAutoTrackEventTypeIgnored(SensorsDataAPI.AutoTrackEventType.APP_CLICK)) {
+            return;
+        }
+
         RNAgent.trackViewClick(viewId);
     }
 
     @ReactMethod
-    public void trackPageView(ReadableMap params) {
+    public void trackViewScreen(ReadableMap params) {
+        //关闭 AutoTrack
+        if (!SensorsDataAPI.sharedInstance().isAutoTrackEnabled()) {
+            return;
+        }
+        //$AppViewScreen 被过滤
+        if (SensorsDataAPI.sharedInstance().isAutoTrackEventTypeIgnored(SensorsDataAPI.AutoTrackEventType.APP_VIEW_SCREEN)) {
+            return;
+        }
         try{
             if (params != null) {
                 JSONObject jsonParams = RNUtils.convertToJSONObject(params);
-                if(jsonParams.optBoolean("sensorsdataignore",false)){
-                    return;
-                }
                 JSONObject properties = null;
                 if(jsonParams.has("sensorsdataparams")){
                     properties = jsonParams.optJSONObject("sensorsdataparams");
@@ -95,7 +109,7 @@ public class RNSensorsDataModule extends ReactContextBaseJavaModule {
                 if(url == null){
                     return;
                 }
-                RNAgent.trackPageView(url, properties);
+                RNAgent.trackViewScreen(url, properties);
             }
         }catch(Exception e){
             SALog.printStackTrace(e);
