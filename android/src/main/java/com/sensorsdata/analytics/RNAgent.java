@@ -56,7 +56,7 @@ public class RNAgent {
         }
     }
 
-    public static void trackViewScreen(String url, JSONObject properties){
+    public static void trackViewScreen(String url, JSONObject properties, boolean isAuto){
         try{
             String screenName = url;
             if(properties == null){
@@ -76,6 +76,14 @@ public class RNAgent {
                 properties.put("$title",title);
             }
             RNViewUtils.saveScreenAndTitle(screenName,title);
+            //关闭 AutoTrack
+            if (isAuto && !SensorsDataAPI.sharedInstance().isAutoTrackEnabled()) {
+                return;
+            }
+            //$AppViewScreen 被过滤
+            if (isAuto && SensorsDataAPI.sharedInstance().isAutoTrackEventTypeIgnored(SensorsDataAPI.AutoTrackEventType.APP_VIEW_SCREEN)) {
+                return;
+            }
             SensorsDataAPI.sharedInstance().trackViewScreen(url, properties);
         }catch(Exception e){
             SALog.printStackTrace(e);

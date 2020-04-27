@@ -284,7 +284,7 @@ public class RNSensorsAnalyticsModule extends ReactContextBaseJavaModule {
     @ReactMethod
     public void trackViewScreen(String url, ReadableMap properties) {
         try {
-            RNAgent.trackViewScreen(url, RNUtils.convertToJSONObject(properties));
+            RNAgent.trackViewScreen(url, RNUtils.convertToJSONObject(properties), false);
         } catch (Exception e) {
             e.printStackTrace();
             Log.e(LOGTAG, e.toString() + "");
