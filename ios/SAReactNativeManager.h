@@ -41,8 +41,9 @@ NS_ASSUME_NONNULL_BEGIN
 
  @param url  页面路径
  @param properties  自定义页面属性
+ @param autoTrack  是否为自动埋点
  */
-+ (void)trackViewScreen:(NSString *)url properties:(nullable NSDictionary *)properties;
++ (void)trackViewScreen:(NSString *)url properties:(nullable NSDictionary *)properties autoTrack:(BOOL)autoTrack;
 
 @end
 

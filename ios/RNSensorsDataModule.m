@@ -33,7 +33,7 @@ RCT_EXPORT_METHOD(trackViewScreen:(NSDictionary *)params) {
     // 自动采集页面浏览时 url 在 params
     NSString *url = params[@"sensorsdataurl"];
     NSDictionary *properties = params[@"sensorsdataparams"];
-    [SAReactNativeManager trackViewScreen:url properties:properties];
+    [SAReactNativeManager trackViewScreen:url properties:properties autoTrack:YES];
 }
 
 @end
