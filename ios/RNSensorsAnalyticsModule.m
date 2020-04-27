@@ -215,10 +215,6 @@ RCT_EXPORT_METHOD(logout){
  */
 RCT_EXPORT_METHOD(trackViewScreen:(NSString *)url withProperties:(NSDictionary *)properties){
     @try {
-        if (!url.length) {
-            NSLog(@"[RNSensorsAnalytics] error: url is empty ！！！");
-            return;
-        }
         [SAReactNativeManager trackViewScreen:url properties:properties];
     } @catch (NSException *exception) {
         NSLog(@"[RNSensorsAnalytics] error:%@",exception);

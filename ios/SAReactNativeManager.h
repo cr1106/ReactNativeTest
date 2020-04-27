@@ -25,6 +25,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface SAReactNativeManager : NSObject
 
+@property (nonatomic, copy, readonly) NSString *currentScreenName;
+
 /**
  @abstract
  触发 React Native 点击事件
@@ -37,10 +39,10 @@ NS_ASSUME_NONNULL_BEGIN
  @abstract
  触发 React Native 页面浏览事件
 
- @param pageName  页面名称
+ @param url  页面路径
  @param properties  自定义页面属性
  */
-+ (void)trackViewScreen:(NSString *)pageName properties:(nullable NSDictionary *)properties;
++ (void)trackViewScreen:(NSString *)url properties:(nullable NSDictionary *)properties;
 
 @end
 

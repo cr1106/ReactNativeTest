@@ -29,9 +29,11 @@ RCT_EXPORT_METHOD(trackViewClick:(NSInteger)reactTag) {
  * @param properties  页面相关消息
  *
 */
-RCT_EXPORT_METHOD(trackViewScreen:(NSDictionary *)properties) {
-    // 自动采集页面浏览时 pageName 在 properties
-    [SAReactNativeManager trackViewScreen:@"" properties:properties];
+RCT_EXPORT_METHOD(trackViewScreen:(NSDictionary *)params) {
+    // 自动采集页面浏览时 url 在 params
+    NSString *url = params[@"sensorsdataurl"];
+    NSDictionary *properties = params[@"sensorsdataparams"];
+    [SAReactNativeManager trackViewScreen:url properties:properties];
 }
 
 @end
