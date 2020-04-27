@@ -53,32 +53,36 @@
     }
     dispatch_async(dispatch_get_main_queue(), ^{
         UIView *view = [[SAReactNativeManager sharedInstance] viewForTag:reactTag];
-        NSDictionary *properties = [[SAReactNativeManager sharedInstance] viewClickPorperties];
-        [[SensorsAnalyticsSDK sharedInstance] trackViewAppClick:view withProperties:properties];
+        NSMutableDictionary *properties = [NSMutableDictionary dictionary];
+        NSDictionary *clickProperties = [[SAReactNativeManager sharedInstance] viewClickPorperties];
+        [properties addEntriesFromDictionary:clickProperties];
+        properties[@"$element_content"] = [view accessibilityLabel];
+
+        [[SensorsAnalyticsSDK sharedInstance] trackViewAppClick:view withProperties:[properties copy]];
     });
 }
 
-+ (void)trackViewScreen:(NSString *)url properties:(nullable NSDictionary *)properties {
-    if (![[SensorsAnalyticsSDK sharedInstance] isAutoTrackEnabled]) {
-        return;
-    }
-    // 忽略 $AppViewScreen 事件
-    if ([[SensorsAnalyticsSDK sharedInstance] isAutoTrackEventTypeIgnored:SensorsAnalyticsEventTypeAppViewScreen]) {
-        return;
-    }
++ (void)trackViewScreen:(NSString *)url properties:(nullable NSDictionary *)properties autoTrack:(BOOL)autoTrack {
     if (url && ![url isKindOfClass:NSString.class]) {
         NSLog(@"[RNSensorsAnalytics] error: url {%@} is not String Class ！！！", url);
         return;
     }
     NSString *screenName = properties[@"$screen_name"] ?: url;
     NSString *title = properties[@"$title"];
-
     NSDictionary *pageProps = [[SAReactNativeManager sharedInstance] viewScreenProperties:screenName title:title];
+
+    if (autoTrack && ![[SensorsAnalyticsSDK sharedInstance] isAutoTrackEnabled]) {
+        return;
+    }
+    // 忽略 $AppViewScreen 事件
+    if (autoTrack && [[SensorsAnalyticsSDK sharedInstance] isAutoTrackEventTypeIgnored:SensorsAnalyticsEventTypeAppViewScreen]) {
+        return;
+    }
     NSMutableDictionary *eventProps = [NSMutableDictionary dictionary];
     [eventProps addEntriesFromDictionary:pageProps];
     [eventProps addEntriesFromDictionary:properties];
 
-    [[SensorsAnalyticsSDK sharedInstance] trackViewScreen:url withProperties:eventProps];
+    [[SensorsAnalyticsSDK sharedInstance] trackViewScreen:url withProperties:[eventProps copy]];
 }
 
 #pragma mark - SDK Method

@@ -215,7 +215,7 @@ RCT_EXPORT_METHOD(logout){
  */
 RCT_EXPORT_METHOD(trackViewScreen:(NSString *)url withProperties:(NSDictionary *)properties){
     @try {
-        [SAReactNativeManager trackViewScreen:url properties:properties];
+        [SAReactNativeManager trackViewScreen:url properties:properties autoTrack:NO];
     } @catch (NSException *exception) {
         NSLog(@"[RNSensorsAnalytics] error:%@",exception);
     }
