@@ -17,7 +17,7 @@ react-native link chenru-react-native-test
 在 package.json 文件增加如下配置:
 ```sh
 "scripts": {
-      "postinstall": "node node_modules/sensorsdata-analytics-react-native/SensorsDataRNHook.js -run"
+      "postinstall": "node node_modules/chenru-react-native-test/SensorsDataRNHook.js -run"
 }
 ```
 ## 执行 npm install 命令
