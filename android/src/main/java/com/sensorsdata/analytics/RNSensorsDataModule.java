@@ -87,14 +87,6 @@ public class RNSensorsDataModule extends ReactContextBaseJavaModule {
 
     @ReactMethod
     public void trackViewScreen(ReadableMap params) {
-        //关闭 AutoTrack
-        if (!SensorsDataAPI.sharedInstance().isAutoTrackEnabled()) {
-            return;
-        }
-        //$AppViewScreen 被过滤
-        if (SensorsDataAPI.sharedInstance().isAutoTrackEventTypeIgnored(SensorsDataAPI.AutoTrackEventType.APP_VIEW_SCREEN)) {
-            return;
-        }
         try{
             if (params != null) {
                 JSONObject jsonParams = RNUtils.convertToJSONObject(params);
@@ -109,7 +101,7 @@ public class RNSensorsDataModule extends ReactContextBaseJavaModule {
                 if(url == null){
                     return;
                 }
-                RNAgent.trackViewScreen(url, properties);
+                RNAgent.trackViewScreen(url, properties, true);
             }
         }catch(Exception e){
             SALog.printStackTrace(e);
