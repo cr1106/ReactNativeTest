@@ -27,13 +27,15 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic, copy, readonly) NSString *currentScreenName;
 
++ (instancetype)sharedInstance;
+
 /**
  @abstract
  触发 React Native 点击事件
 
  @param reactTag  React Native 分配的唯一标识符
  */
-+ (void)trackViewClick:(NSNumber *)reactTag;
+- (void)trackViewClick:(NSNumber *)reactTag;
 
 /**
  @abstract
@@ -43,7 +45,7 @@ NS_ASSUME_NONNULL_BEGIN
  @param properties  自定义页面属性
  @param autoTrack  是否为自动埋点
  */
-+ (void)trackViewScreen:(NSString *)url properties:(nullable NSDictionary *)properties autoTrack:(BOOL)autoTrack;
+- (void)trackViewScreen:(nullable NSString *)url properties:(nullable NSDictionary *)properties autoTrack:(BOOL)autoTrack;
 
 @end
 

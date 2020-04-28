@@ -42,8 +42,18 @@
 
 @implementation SAReactNativeManager
 
+#pragma mark - life cycle
++ (instancetype)sharedInstance {
+    static SAReactNativeManager *manager;
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        manager = [[SAReactNativeManager alloc] init];
+    });
+    return manager;
+}
+
 #pragma mark - public
-+ (void)trackViewClick:(NSNumber *)reactTag {
+- (void)trackViewClick:(NSNumber *)reactTag {
     if (![[SensorsAnalyticsSDK sharedInstance] isAutoTrackEnabled]) {
         return;
     }
@@ -54,7 +64,7 @@
     dispatch_async(dispatch_get_main_queue(), ^{
         UIView *view = [[SAReactNativeManager sharedInstance] viewForTag:reactTag];
         NSMutableDictionary *properties = [NSMutableDictionary dictionary];
-        NSDictionary *clickProperties = [[SAReactNativeManager sharedInstance] viewClickPorperties];
+        NSDictionary *clickProperties = [self viewClickPorperties];
         [properties addEntriesFromDictionary:clickProperties];
         properties[@"$element_content"] = [view accessibilityLabel];
 
@@ -62,14 +72,14 @@
     });
 }
 
-+ (void)trackViewScreen:(NSString *)url properties:(nullable NSDictionary *)properties autoTrack:(BOOL)autoTrack {
+- (void)trackViewScreen:(nullable NSString *)url properties:(nullable NSDictionary *)properties autoTrack:(BOOL)autoTrack {
     if (url && ![url isKindOfClass:NSString.class]) {
         NSLog(@"[RNSensorsAnalytics] error: url {%@} is not String Class ！！！", url);
         return;
     }
     NSString *screenName = properties[@"$screen_name"] ?: url;
     NSString *title = properties[@"$title"];
-    NSDictionary *pageProps = [[SAReactNativeManager sharedInstance] viewScreenProperties:screenName title:title];
+    NSDictionary *pageProps = [self viewScreenProperties:screenName title:title];
 
     if (autoTrack && ![[SensorsAnalyticsSDK sharedInstance] isAutoTrackEnabled]) {
         return;
@@ -86,13 +96,13 @@
 }
 
 #pragma mark - SDK Method
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Warc-performSelector-leaks"
-+ (UIView *)rootView {
++ (RCTRootView *)rootView {
+    // RCTRootView 只能是 UIViewController 的 view，不能作为其他 View 的 SubView 使用
     UIViewController *root = [[[UIApplication sharedApplication] keyWindow] rootViewController];
     UIView *view = [root view];
+    // 不是混编 React Native 项目时直接获取 RootViewController 的 view
     if ([view isKindOfClass:RCTRootView.class]) {
-        return view;
+        return (RCTRootView *)view;
     }
     Class utils = NSClassFromString(@"SAAutoTrackUtils");
     if (!utils) {
@@ -102,27 +112,22 @@
     if (![utils respondsToSelector:currentCallerSEL]) {
         return nil;
     }
+
+    // 混编 React Native 项目时获取当前显示的 UIViewController 的 view
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Warc-performSelector-leaks"
     UIViewController *caller = [utils performSelector:currentCallerSEL];
-    return caller.view;
-}
 #pragma clang diagnostic pop
 
-#pragma mark - private
-+ (instancetype)sharedInstance {
-    static SAReactNativeManager *manager;
-    static dispatch_once_t onceToken;
-    dispatch_once(&onceToken, ^{
-        manager = [[SAReactNativeManager alloc] init];
-    });
-    return manager;
-}
-
-- (UIView *)viewForTag:(NSNumber *)reactTag {
-    UIView *view = [SAReactNativeManager rootView];
-    if (![view isKindOfClass:RCTRootView.class]) {
+    if (![caller.view isKindOfClass:RCTRootView.class]) {
         return nil;
     }
-    RCTRootView *rootView = (RCTRootView *)view;
+    return (RCTRootView *)caller.view;
+}
+
+#pragma mark - private
+- (UIView *)viewForTag:(NSNumber *)reactTag {
+    RCTRootView *rootView = [SAReactNativeManager rootView];
     RCTUIManager *manager = rootView.bridge.uiManager;
     return [manager viewForReactTag:reactTag];
 }
