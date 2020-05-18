@@ -19,6 +19,7 @@ public class RNViewUtils {
     private static WeakReference onTouchViewReference;
     private static String currentTitle;
     private static String currentScreenName;
+    public static boolean isScreenVisiable = false;
 
     public static void setOnTouchView(View nativeTargetView) {
         onTouchViewReference = new WeakReference(nativeTargetView);
@@ -113,10 +114,20 @@ public class RNViewUtils {
     }
 
     public static String getTitle(){
+        if(!isScreenVisiable){
+            return "";
+        }
         return currentTitle;
     }
 
     public static String getScreenName(){
+        if(!isScreenVisiable){
+            return "";
+        }
         return currentScreenName;
+    }
+
+    public static void setScreenVisiable(boolean isVisiable){
+        isScreenVisiable = isVisiable;
     }
 }

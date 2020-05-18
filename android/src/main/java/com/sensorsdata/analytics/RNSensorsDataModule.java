@@ -22,6 +22,7 @@ import android.text.TextUtils;
 import android.util.Log;
 
 import com.facebook.react.bridge.Callback;
+import com.facebook.react.bridge.LifecycleEventListener;
 import com.facebook.react.bridge.Promise;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
@@ -54,10 +55,12 @@ import java.util.HashSet;
  * ReadableArray -> Array
  */
 
-public class RNSensorsDataModule extends ReactContextBaseJavaModule {
+public class RNSensorsDataModule extends ReactContextBaseJavaModule implements LifecycleEventListener{
 
     public RNSensorsDataModule(ReactApplicationContext reactContext) {
         super(reactContext);
+        reactContext.addLifecycleEventListener(this);
+        RNAgent.ignoreView();
     }
 
     private static final String MODULE_NAME = "RNSensorsDataModule";
@@ -106,5 +109,22 @@ public class RNSensorsDataModule extends ReactContextBaseJavaModule {
         }catch(Exception e){
             SALog.printStackTrace(e);
         }
+    }
+
+    @ReactMethod
+    public void saveViewProperties(int viewId, boolean clickable, ReadableMap viewProperties) {
+        RNAgent.saveViewProperties(viewId, clickable, viewProperties);
+    }
+
+    public void onHostResume() {
+       RNViewUtils.setScreenVisiable(true);
+    }
+
+    public void onHostPause() {
+        RNViewUtils.setScreenVisiable(false);
+    }
+
+    public void onHostDestroy() {
+
     }
 }
