@@ -13,6 +13,7 @@ import java.lang.reflect.Field;
 import android.view.ViewGroup;
 import android.view.View;
 import android.view.ViewParent;
+import org.json.JSONObject;
 
 public class RNViewUtils {
 
@@ -20,6 +21,7 @@ public class RNViewUtils {
     private static String currentTitle;
     private static String currentScreenName;
     public static boolean isScreenVisiable = false;
+    private static JSONObject properties = new JSONObject();
 
     public static void setOnTouchView(View nativeTargetView) {
         onTouchViewReference = new WeakReference(nativeTargetView);
@@ -111,20 +113,32 @@ public class RNViewUtils {
     public static void saveScreenAndTitle(String screenName,String title){
         currentScreenName = screenName;
         currentTitle = title;
+        try{
+            properties.put("$title", title);
+            properties.put("$screen_name", screenName);
+        }catch (Exception e){
+
+        }
+
     }
 
     public static String getTitle(){
-        if(!isScreenVisiable){
-            return "";
-        }
         return currentTitle;
     }
 
     public static String getScreenName(){
-        if(!isScreenVisiable){
-            return "";
-        }
         return currentScreenName;
+    }
+
+    /**
+     * 供可视化调用，返回 $title，$screen_name
+     * @return json 格式
+     */
+    public static String getVisualizeProperties(){
+        if(!isScreenVisiable){
+            return null;
+        }
+        return properties.toString();
     }
 
     public static void setScreenVisiable(boolean isVisiable){

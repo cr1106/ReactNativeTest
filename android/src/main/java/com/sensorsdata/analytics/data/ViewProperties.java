@@ -18,8 +18,8 @@
 package com.sensorsdata.analytics.data;
 
 import android.view.View;
- import android.widget.ScrollView;
- import com.facebook.react.bridge.ReadableMap;
+import android.widget.ScrollView;
+import com.facebook.react.bridge.ReadableMap;
 
 public class ViewProperties {
     private  boolean clickable;
@@ -33,7 +33,7 @@ public class ViewProperties {
     public void setViewProperty(View view){
         try{
             if(view != null){
-                if(!(view instanceof ScrollView) && clickable){
+                if(!(view instanceof ScrollView)){
                     view.setClickable(true);
                 }
             }

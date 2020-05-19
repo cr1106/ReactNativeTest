@@ -113,7 +113,7 @@ public class RNAgent {
 
     public static void saveViewProperties(int viewId, boolean clickable, ReadableMap viewProperties) {
         if(clickable){
-            viewPropertiesArray.put(viewId,new ViewProperties(clickable,viewProperties));
+            viewPropertiesArray.put(viewId, new ViewProperties(clickable,viewProperties));
         }
     }   
 
@@ -124,6 +124,9 @@ public class RNAgent {
         }
     }
 
+    /**
+     * 忽略 Slider、Switch Android SDK 的采集逻辑，统一通过 Recat Native 采集
+     */
     static void ignoreView(){
         try{
             SensorsDataAPI.sharedInstance().ignoreViewType(Class.forName("com.facebook.react.views.switchview.ReactSwitch"));

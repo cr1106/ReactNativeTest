@@ -55,11 +55,15 @@ import java.util.HashSet;
  * ReadableArray -> Array
  */
 
-public class RNSensorsDataModule extends ReactContextBaseJavaModule implements LifecycleEventListener{
+public class RNSensorsDataModule extends ReactContextBaseJavaModule{
 
     public RNSensorsDataModule(ReactApplicationContext reactContext) {
         super(reactContext);
-        reactContext.addLifecycleEventListener(this);
+        try{
+            reactContext.addLifecycleEventListener(new SensorsDataLifecycleListener());
+        }catch(Exception e){
+
+        }
         RNAgent.ignoreView();
     }
 
@@ -116,15 +120,17 @@ public class RNSensorsDataModule extends ReactContextBaseJavaModule implements L
         RNAgent.saveViewProperties(viewId, clickable, viewProperties);
     }
 
-    public void onHostResume() {
-       RNViewUtils.setScreenVisiable(true);
-    }
+    class SensorsDataLifecycleListener implements LifecycleEventListener {
+        public void onHostResume() {
+            RNViewUtils.setScreenVisiable(true);
+        }
 
-    public void onHostPause() {
-        RNViewUtils.setScreenVisiable(false);
-    }
+        public void onHostPause() {
+            RNViewUtils.setScreenVisiable(false);
+        }
 
-    public void onHostDestroy() {
+        public void onHostDestroy() {
 
+        }
     }
 }
