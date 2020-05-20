@@ -33,10 +33,70 @@
 #import <SensorsAnalyticsSDK/SensorsAnalyticsSDK.h>
 #endif
 
+#import "SAReactNativeswizzler.h"
+
+static NSString *CLICKABLE_VIEWS_KEY = @"com.sensorsdata.reactnative.clickableviews";
+
 @interface SAReactNativeManager ()
 
 @property (nonatomic, copy) NSString *currentScreenName;
 @property (nonatomic, copy) NSString *currentTitle;
+@property (nonatomic, strong) NSSet *ignoreClasses;
+@property (nonatomic, assign) BOOL isRootViewVisible;
+
+@end
+
+@implementation UIViewController (SAReactNative)
+
++ (void)load {
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        [UIViewController sarn_swizzleMethod:@selector(viewDidAppear:)
+                                         withMethod:@selector(sa_reactnative_viewDidAppear:)
+                                              error:NULL];
+
+        [UIViewController sarn_swizzleMethod:@selector(viewDidDisappear:)
+                                         withMethod:@selector(sa_reactnative_viewDidDisappear:)
+                                              error:NULL];
+    });
+}
+
+- (void)sa_reactnative_viewDidAppear:(BOOL)animated {
+    [self sa_reactnative_viewDidAppear:animated];
+
+    // 此处有一个已知问题，当从一个模态原生页面返回时，不会触发此方法。
+    // 为了暂时解决这个问题，在触发 RN 页面浏览或 RN 点击时，会重置 isRootViewVisible 状态
+    // 此问题只会影响可视化全埋点功能
+    if (![self.view isReactRootView]) {
+        return;
+    }
+    if ([self isIgnoreAppViewScreen]) {
+        return;
+    }
+    [[SAReactNativeManager sharedInstance] setIsRootViewVisible:YES];
+}
+
+- (void)sa_reactnative_viewDidDisappear:(BOOL)animated {
+    [self sa_reactnative_viewDidDisappear:animated];
+    if (![self.view isReactRootView]) {
+        return;
+    }
+    if ([self isIgnoreAppViewScreen]) {
+        return;
+    }
+    [[SAReactNativeManager sharedInstance] setIsRootViewVisible:NO];
+}
+
+- (BOOL)isIgnoreAppViewScreen {
+    if (![[SensorsAnalyticsSDK sharedInstance] isAutoTrackEnabled]) {
+        return YES;
+    }
+    // 忽略 $AppClick 事件
+    if ([[SensorsAnalyticsSDK sharedInstance] isAutoTrackEventTypeIgnored:SensorsAnalyticsEventTypeAppViewScreen]) {
+        return YES;
+    }
+    return NO;
+}
 
 @end
 
@@ -48,11 +108,60 @@
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
         manager = [[SAReactNativeManager alloc] init];
+
     });
     return manager;
 }
 
-#pragma mark - public
+- (instancetype)init {
+    self = [super init];
+    if (self) {
+        NSSet *ignoreClasses = [NSSet setWithObjects:@"RCTSwitch", @"RCTSlider", @"RCTSegmentedControl", @"RNGestureHandlerButton", nil];
+        for (NSString *className in ignoreClasses) {
+            [[SensorsAnalyticsSDK sharedInstance] ignoreViewType:NSClassFromString(className)];
+        }
+        _ignoreClasses = [NSSet setWithObjects:@"RCTScrollView", nil];
+        _isRootViewVisible = NO;
+
+        [[NSUserDefaults standardUserDefaults] removeObjectForKey:CLICKABLE_VIEWS_KEY];
+    }
+    return self;
+}
+
+#pragma mark - visualize
+- (NSDictionary *)visualizeProperties {
+    return _isRootViewVisible ? [self screenProperties] : nil;
+}
+
+- (BOOL)clickableForView:(UIView *)view {
+    if ([_ignoreClasses containsObject:NSStringFromClass(view.class)]) {
+        return NO;
+    }
+    NSArray *array = [[NSUserDefaults standardUserDefaults] objectForKey:CLICKABLE_VIEWS_KEY];
+    if (!array) {
+        return NO;
+    }
+    return [array containsObject:view.reactTag];
+}
+
+- (BOOL)prepareView:(NSNumber *)reactTag clickable:(BOOL)clickable paramters:(NSDictionary *)paramters {
+    if (!clickable) {
+        return NO;
+    }
+    [self addClickableViewReactTag:reactTag];
+    return YES;
+}
+
+- (void)addClickableViewReactTag:(NSNumber *)reactTag {
+    NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
+    NSArray *array = [defaults objectForKey:CLICKABLE_VIEWS_KEY];
+    NSMutableArray *mArray = [NSMutableArray arrayWithArray:array];
+    [mArray addObject:reactTag];
+    [defaults setObject:[mArray copy] forKey:CLICKABLE_VIEWS_KEY];
+    [defaults synchronize];
+}
+
+#pragma mark - AppClick
 - (void)trackViewClick:(NSNumber *)reactTag {
     if (![[SensorsAnalyticsSDK sharedInstance] isAutoTrackEnabled]) {
         return;
@@ -61,10 +170,16 @@
     if ([[SensorsAnalyticsSDK sharedInstance] isAutoTrackEventTypeIgnored:SensorsAnalyticsEventTypeAppClick]) {
         return;
     }
+
+    // 暂时解决原生页面返回 RN 页面没有重置状态的问题
+    // 从原生页面返回 RN 页面只有触发页面浏览事件后，才能正确返回页面信息
+    // 此问题只会出现在可视化全埋点功能中
+    _isRootViewVisible = YES;
+
     dispatch_async(dispatch_get_main_queue(), ^{
         UIView *view = [[SAReactNativeManager sharedInstance] viewForTag:reactTag];
         NSMutableDictionary *properties = [NSMutableDictionary dictionary];
-        NSDictionary *clickProperties = [self viewClickPorperties];
+        NSDictionary *clickProperties = [self screenProperties];
         [properties addEntriesFromDictionary:clickProperties];
         properties[@"$element_content"] = [view accessibilityLabel];
 
@@ -72,6 +187,7 @@
     });
 }
 
+#pragma mark - AppViewScreen
 - (void)trackViewScreen:(nullable NSString *)url properties:(nullable NSDictionary *)properties autoTrack:(BOOL)autoTrack {
     if (url && ![url isKindOfClass:NSString.class]) {
         NSLog(@"[RNSensorsAnalytics] error: url {%@} is not String Class ！！！", url);
@@ -88,6 +204,12 @@
     if (autoTrack && [[SensorsAnalyticsSDK sharedInstance] isAutoTrackEventTypeIgnored:SensorsAnalyticsEventTypeAppViewScreen]) {
         return;
     }
+
+    // 暂时解决原生页面返回 RN 页面没有重置状态的问题
+    // 从原生页面返回 RN 页面只有触发页面浏览事件后，才能正确返回页面信息
+    // 此问题只会出现在可视化全埋点功能中
+    _isRootViewVisible = YES;
+
     NSMutableDictionary *eventProps = [NSMutableDictionary dictionary];
     [eventProps addEntriesFromDictionary:pageProps];
     [eventProps addEntriesFromDictionary:properties];
@@ -135,10 +257,10 @@
 - (NSDictionary *)viewScreenProperties:(NSString *)screenName title:(NSString *)title {
     _currentScreenName = screenName;
     _currentTitle = title ?: screenName;
-    return [self viewClickPorperties];
+    return [self screenProperties];
 }
 
-- (NSDictionary *)viewClickPorperties {
+- (NSDictionary *)screenProperties {
     NSMutableDictionary *properties = [NSMutableDictionary dictionary];
     properties[@"$screen_name"] = _currentScreenName;
     properties[@"$title"] = _currentTitle;
