@@ -35,6 +35,7 @@ var RNGestureButtonsFilePath = dir + '/react-native-gesture-handler/GestureButto
 // click 需 hook 的自执行代码
 var sensorsdataClickHookCode = "(function(thatThis){ try {var ReactNative = require('react-native');var dataModule = ReactNative.NativeModules.RNSensorsDataModule;thatThis.props.onPress && dataModule && dataModule.trackViewClick && dataModule.trackViewClick(ReactNative.findNodeHandle(thatThis))} catch (error) { throw new Error('SensorsData RN Hook Code 调用异常: ' + error);}})(this); /* SENSORSDATA HOOK */ ";
 var sensorsdataSliderHookCode = "(function(thatThis){ try {var ReactNative = require('react-native');var dataModule = ReactNative.NativeModules.RNSensorsDataModule;dataModule && dataModule.trackViewClick && dataModule.trackViewClick(event.nativeEvent.target);} catch (error) { throw new Error('SensorsData RN Hook Code 调用异常: ' + error);}})(this); /* SENSORSDATA HOOK */";
+var sensorsdataSegmentedControlHookCode = "if(this.props.onChange != null || this.props.onValueChange != null){(function(thatThis){ try {var ReactNative = require('react-native');var dataModule = ReactNative.NativeModules.RNSensorsDataModule;dataModule && dataModule.trackViewClick && dataModule.trackViewClick(event.nativeEvent.target);} catch (error) { throw new Error('SensorsData RN Hook Code 调用异常: ' + error);}})(this); /* SENSORSDATA HOOK */}";
 var sensorsdataSwitchHookCode = "if(this.props.onChange != null || this.props.onValueChange != null){(function(thatThis){ try {var ReactNative = require('react-native');var dataModule = ReactNative.NativeModules.RNSensorsDataModule;dataModule && dataModule.trackViewClick && dataModule.trackViewClick(ReactNative.findNodeHandle(thatThis));} catch (error) { throw new Error('SensorsData RN Hook Code 调用异常: ' + error);}})(this); /* SENSORSDATA HOOK */}";
 
 // hook click
@@ -172,7 +173,7 @@ sensorsdataHookSegmentedControlRN = function () {
             throw "Can't not find onValueChange function";
         };
         // 插入 hook 代码
-        var hookedContent = `${fileContent.substring(0, hookIndex+scriptStr.length)}\n${sensorsdataSliderHookCode}\n${fileContent.substring(hookIndex+scriptStr.length)}`;
+        var hookedContent = `${fileContent.substring(0, hookIndex+scriptStr.length)}\n${sensorsdataSegmentedControlHookCode}\n${fileContent.substring(hookIndex+scriptStr.length)}`;
         // 备份 Touchable.js 源文件
         fs.renameSync(RNSegmentedControlFilePath, `${RNSegmentedControlFilePath}_sensorsdata_backup`);
         // 重写 Touchable.js 文件
@@ -273,7 +274,10 @@ sensorsdataHookClickableRN = function (reset = false) {
 };
 // 恢复被 hook 过的代码
 sensorsdataResetRN = function (resetFilePath) {
-    // 读取文件内容
+    // 判断需要被恢复的文件是否存在
+    if (!fs.existsSync(resetFilePath)) {
+        return;
+    }
     var fileContent = fs.readFileSync(resetFilePath, "utf8");
     // 未被 hook 过代码，不需要处理
     if (fileContent.indexOf('SENSORSDATA HOOK') == -1) {
