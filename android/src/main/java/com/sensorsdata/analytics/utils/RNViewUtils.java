@@ -136,7 +136,7 @@ public class RNViewUtils {
      */
     public static String getVisualizeProperties(){
         if(!isScreenVisiable){
-            return null;
+            return "";
         }
         return properties.toString();
     }

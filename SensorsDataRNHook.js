@@ -127,7 +127,7 @@ sensorsdataHookSwitchRN = function (reset = false) {
                 // 特殊情况的单独插入
                 // if (this.props.onValueChange != null) {
                 var scriptStr = "if (this.props.onValueChange != null) {";
-                var hookIndex = fileContent.indexOf(scriptStr); 
+                var hookIndex = fileContent.indexOf(scriptStr);
                 if (hookIndex > -1) {
                     // 插入 hook 代码
                     var hookedContent = `${fileContent.substring(0, hookIndex)}\n${sensorsdataSwitchHookCode}\n${fileContent.substring(hookIndex)}`;
