@@ -201,7 +201,7 @@ sensorsdataHookGestureButtonsRN = function () {
             throw "Can't not find onValueChange function";
         };
         // 插入 hook 代码
-        var hookedContent = `${fileContent.substring(0, hookIndex+scriptStr.length)}\n${sensorsdataSwitchHookCode}\n${fileContent.substring(hookIndex+scriptStr.length)}`;
+        var hookedContent = `${fileContent.substring(0, hookIndex+scriptStr.length)}\n${sensorsdataClickHookCode}\n${fileContent.substring(hookIndex+scriptStr.length)}`;
         // 备份 Touchable.js 源文件
         fs.renameSync(RNGestureButtonsFilePath, `${RNGestureButtonsFilePath}_sensorsdata_backup`);
         // 重写 Touchable.js 文件
@@ -369,6 +369,7 @@ navigationString3 = function (prevStateVarName, currentStateVarName, actionName)
                  dataModule && dataModule.trackViewScreen && dataModule.trackViewScreen(params);
             } else if (require('react-native').Platform.OS === 'ios') {
                 if (!${actionName} || iosOnPageShow) {
+                    var ReactNative = require('react-native');
                     var dataModule = ReactNative.NativeModules.RNSensorsDataModule;
                     dataModule && dataModule.trackViewScreen && dataModule.trackViewScreen(params);
                 }
@@ -388,6 +389,7 @@ navigationEventString = function () {
                 payload.state.params = {sensorsdataurl:payload.state.routeName};
             }
             if(type == 'didFocus') {
+                 var ReactNative = require('react-native');
                  var dataModule = ReactNative.NativeModules.RNSensorsDataModule;
                  dataModule && dataModule.trackViewScreen && dataModule.trackViewScreen(payload.state.params);
             }
@@ -427,6 +429,7 @@ navigationString = function (currentStateVarName, actionName) {
 
     script = `${script} var params = $$$getActivePageName$$$(${currentStateVarName});
             if (require('react-native').Platform.OS === 'android') {
+             var ReactNative = require('react-native');
              var dataModule = ReactNative.NativeModules.RNSensorsDataModule;
              dataModule && dataModule.trackViewScreen && dataModule.trackViewScreen(params);}`;
     return script;
