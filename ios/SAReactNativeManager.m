@@ -34,6 +34,7 @@
 #endif
 
 #import "SAReactNativeswizzler.h"
+#import <objc/runtime.h>
 
 static NSString *CLICKABLE_VIEWS_KEY = @"com.sensorsdata.reactnative.clickableviews";
 
@@ -46,56 +47,87 @@ static NSString *CLICKABLE_VIEWS_KEY = @"com.sensorsdata.reactnative.clickablevi
 
 @end
 
+@interface UIViewController (SAReactNative)
+
+@property (nonatomic, assign) BOOL isReferrerRootView;
+
+@end
+
 @implementation UIViewController (SAReactNative)
 
 + (void)load {
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
         [UIViewController sarn_swizzleMethod:@selector(viewDidAppear:)
-                                         withMethod:@selector(sa_reactnative_viewDidAppear:)
-                                              error:NULL];
+                                  withMethod:@selector(sa_reactnative_viewDidAppear:)
+                                       error:NULL];
 
         [UIViewController sarn_swizzleMethod:@selector(viewDidDisappear:)
-                                         withMethod:@selector(sa_reactnative_viewDidDisappear:)
-                                              error:NULL];
+                                  withMethod:@selector(sa_reactnative_viewDidDisappear:)
+                                       error:NULL];
     });
+}
+
+- (BOOL)isReferrerRootView {
+    NSNumber *result = objc_getAssociatedObject(self, _cmd);
+    return result.boolValue;
+}
+
+- (void)setIsReferrerRootView:(BOOL)isRootView {
+    objc_setAssociatedObject(self, @selector(isReferrerRootView), @(isRootView), OBJC_ASSOCIATION_RETAIN_NONATOMIC);
 }
 
 - (void)sa_reactnative_viewDidAppear:(BOOL)animated {
     [self sa_reactnative_viewDidAppear:animated];
 
-    // 此处有一个已知问题，当从一个模态原生页面返回时，不会触发此方法。
-    // 为了暂时解决这个问题，在触发 RN 页面浏览或 RN 点击时，会重置 isRootViewVisible 状态
-    // 此问题只会影响可视化全埋点功能
-    if (![self.view isReactRootView]) {
+    // 当前 Controller 为 React Native 根视图时，设置标志位为 YES
+    if ([self.view isReactRootView]) {
+        [[SAReactNativeManager sharedInstance] setIsRootViewVisible:YES];
         return;
     }
-    if ([self isIgnoreAppViewScreen]) {
+
+    // 当前 Controller 不为 React Native 根视图时， isRootViewVisible 一定为 NO
+    [[SAReactNativeManager sharedInstance] setIsRootViewVisible:NO];
+
+    //记录 referrer 是否为 React Native 根视图
+    UIViewController *referrer = self.presentingViewController;
+    if (!referrer) {
         return;
     }
-    [[SAReactNativeManager sharedInstance] setIsRootViewVisible:YES];
+    if ([referrer isKindOfClass:UITabBarController.class]) {
+        UIViewController *select = [(UITabBarController *)referrer selectedViewController];
+        if ([select isKindOfClass:[UINavigationController class]]) {
+            UIViewController *vc = [(UINavigationController *)select viewControllers].lastObject;
+            if ([vc.view isReactRootView]) {
+                self.isReferrerRootView = YES;
+            }
+        }
+    } else if ([referrer isKindOfClass:UINavigationController.class]) {
+        UIViewController *vc = [(UINavigationController *)referrer viewControllers].lastObject;
+        if ([vc.view isReactRootView]) {
+            self.isReferrerRootView = YES;
+        }
+    } else if ([referrer isKindOfClass:UIViewController.class]) {
+        if ([referrer.view isReactRootView]) {
+            self.isReferrerRootView = YES;
+        }
+    }
 }
 
 - (void)sa_reactnative_viewDidDisappear:(BOOL)animated {
     [self sa_reactnative_viewDidDisappear:animated];
-    if (![self.view isReactRootView]) {
-        return;
-    }
-    if ([self isIgnoreAppViewScreen]) {
-        return;
-    }
-    [[SAReactNativeManager sharedInstance] setIsRootViewVisible:NO];
-}
 
-- (BOOL)isIgnoreAppViewScreen {
-    if (![[SensorsAnalyticsSDK sharedInstance] isAutoTrackEnabled]) {
-        return YES;
+    // 当前 Controller 为 React Native 根视图时，消失时将标志位设置为 NO
+    if ([self.view isReactRootView]) {
+        [[SAReactNativeManager sharedInstance] setIsRootViewVisible:NO];
+        return;
     }
-    // 忽略 $AppClick 事件
-    if ([[SensorsAnalyticsSDK sharedInstance] isAutoTrackEventTypeIgnored:SensorsAnalyticsEventTypeAppViewScreen]) {
-        return YES;
+
+    // 当前 Controller 的 referrer 为 React Native 根视图时，消失时将标志位设置为 YES
+    if (self.isReferrerRootView) {
+        [[SAReactNativeManager sharedInstance] setIsRootViewVisible:YES];
+        return;
     }
-    return NO;
 }
 
 @end
@@ -171,11 +203,6 @@ static NSString *CLICKABLE_VIEWS_KEY = @"com.sensorsdata.reactnative.clickablevi
         return;
     }
 
-    // 暂时解决原生页面返回 RN 页面没有重置状态的问题
-    // 从原生页面返回 RN 页面只有触发页面浏览事件后，才能正确返回页面信息
-    // 此问题只会出现在可视化全埋点功能中
-    _isRootViewVisible = YES;
-
     dispatch_async(dispatch_get_main_queue(), ^{
         UIView *view = [[SAReactNativeManager sharedInstance] viewForTag:reactTag];
         NSMutableDictionary *properties = [NSMutableDictionary dictionary];
@@ -204,11 +231,6 @@ static NSString *CLICKABLE_VIEWS_KEY = @"com.sensorsdata.reactnative.clickablevi
     if (autoTrack && [[SensorsAnalyticsSDK sharedInstance] isAutoTrackEventTypeIgnored:SensorsAnalyticsEventTypeAppViewScreen]) {
         return;
     }
-
-    // 暂时解决原生页面返回 RN 页面没有重置状态的问题
-    // 从原生页面返回 RN 页面只有触发页面浏览事件后，才能正确返回页面信息
-    // 此问题只会出现在可视化全埋点功能中
-    _isRootViewVisible = YES;
 
     NSMutableDictionary *eventProps = [NSMutableDictionary dictionary];
     [eventProps addEntriesFromDictionary:pageProps];
