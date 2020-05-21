@@ -127,10 +127,6 @@ sensorsdataHookSwitchRN = function (reset = false) {
                 // if (this.props.onValueChange != null) {
                 var scriptStr = "if (this.props.onValueChange != null) {";
                 var hookIndex = fileContent.indexOf(scriptStr);
-                // 判断文件是否异常，不存在 touchableHandlePress 方法，导致无法 hook 点击事件
-                if (hookIndex == -1) {
-                    throw "Can't not find _handleChange function";
-                };
                 if (hookIndex > -1) {
                     // 插入 hook 代码
                     var hookedContent = `${fileContent.substring(0, hookIndex)}\n${sensorsdataSwitchHookCode}\n${fileContent.substring(hookIndex)}`;
