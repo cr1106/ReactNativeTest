@@ -79,20 +79,24 @@
 - (void)sa_reactnative_viewDidAppear:(BOOL)animated {
     [self sa_reactnative_viewDidAppear:animated];
 
+    if ([self isKindOfClass:UIAlertController.class]) {
+        return;
+    }
     // 当前 Controller 为 React Native 根视图时，设置标志位为 YES
     if ([self.view isReactRootView]) {
         [[SAReactNativeManager sharedInstance] setIsRootViewVisible:YES];
         return;
     }
 
-    // 当前 Controller 不为 React Native 根视图时， isRootViewVisible 肯定为 NO
-    [[SAReactNativeManager sharedInstance] setIsRootViewVisible:NO];
-
     //检查 referrer 是否为 React Native 根视图
     UIViewController *referrer = self.presentingViewController;
     if (!referrer) {
         return;
     }
+
+    // 当前 Controller 不为 React Native 根视图时， isRootViewVisible 肯定为 NO
+    [[SAReactNativeManager sharedInstance] setIsRootViewVisible:NO];
+
     if ([referrer isKindOfClass:UITabBarController.class]) {
         UIViewController *controller = [(UITabBarController *)referrer selectedViewController];
         [self checkReferrerController:controller];
@@ -196,7 +200,7 @@
         NSMutableDictionary *properties = [NSMutableDictionary dictionary];
         NSDictionary *screenProperties = [self screenProperties];
         [properties addEntriesFromDictionary:screenProperties];
-        properties[@"$element_content"] = [view accessibilityLabel];
+        properties[@"$element_content"] = [view.accessibilityLabel stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]];
 
         [[SensorsAnalyticsSDK sharedInstance] trackViewAppClick:view withProperties:[properties copy]];
     });
